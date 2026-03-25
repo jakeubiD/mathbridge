@@ -1,0 +1,2536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="description" content="MathBridge — Free multilingual math learning for K-12 students worldwide">
+<title>MathBridge</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f1a;
+    --bg2: #1a1a2e;
+    --bg3: #16213e;
+    --card: #1e1e35;
+    --card2: #252540;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --accent3: #43e97b;
+    --accent4: #f7971e;
+    --accent5: #38f9d7;
+    --text: #f0f0ff;
+    --text2: #a0a0c0;
+    --text3: #6060a0;
+    --border: rgba(108,99,255,0.2);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --font-head: 'Baloo 2', cursive;
+    --font-body: 'Nunito', sans-serif;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+    --glow: 0 0 20px rgba(108,99,255,0.3);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* STARS BACKGROUND */
+  .stars {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(108,99,255,0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(67,233,123,0.04) 0%, transparent 50%);
+  }
+  .stars::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 60%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 30%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 80%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 45%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 10%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 70%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 90%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 5%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 50%, rgba(255,255,255,0.2) 0%, transparent 100%);
+  }
+
+  /* SCREENS */
+  .screen { display: none; position: relative; z-index: 1; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ===== LANDING SCREEN ===== */
+  #screen-landing {
+    align-items: center; justify-content: center;
+    padding: 24px; text-align: center;
+  }
+  .logo-wrap { margin-bottom: 32px; }
+  .logo-icon {
+    width: 90px; height: 90px;
+    background: linear-gradient(135deg, var(--accent), var(--accent5));
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 44px; margin: 0 auto 16px;
+    box-shadow: var(--glow), 0 0 60px rgba(108,99,255,0.2);
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .logo-name {
+    font-family: var(--font-head);
+    font-size: 42px; font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent5));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .logo-tagline { color: var(--text2); font-size: 16px; margin-top: 6px; }
+
+  .landing-subtitle {
+    font-size: 18px; color: var(--text2); max-width: 360px;
+    line-height: 1.6; margin-bottom: 40px;
+  }
+
+  /* Language selector */
+  .lang-section { margin-bottom: 32px; }
+  .lang-label { font-size: 13px; color: var(--text3); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+  .lang-grid {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 340px;
+  }
+  .lang-btn {
+    background: var(--card); border: 1.5px solid var(--border);
+    color: var(--text); font-family: var(--font-body); font-size: 14px; font-weight: 600;
+    padding: 8px 16px; border-radius: 50px; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+  .lang-btn:hover, .lang-btn.active {
+    background: var(--accent); border-color: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  /* Grade selector */
+  .grade-section { margin-bottom: 36px; }
+  .section-label { font-size: 13px; color: var(--text3); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .grade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 340px; }
+  .grade-btn {
+    background: var(--card); border: 2px solid var(--border);
+    color: var(--text); font-family: var(--font-head); font-size: 16px; font-weight: 700;
+    padding: 18px 12px; border-radius: var(--radius); cursor: pointer;
+    transition: all 0.2s; text-align: center;
+  }
+  .grade-btn .grade-range { font-size: 20px; display: block; margin-bottom: 4px; }
+  .grade-btn .grade-desc { font-size: 11px; color: var(--text2); font-family: var(--font-body); font-weight: 400; }
+  .grade-btn:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--glow); }
+  .grade-btn.active { border-color: var(--accent); background: rgba(108,99,255,0.15); box-shadow: var(--glow); }
+  .grade-btn.k3 .grade-range { color: var(--accent3); }
+  .grade-btn.g46 .grade-range { color: var(--accent4); }
+  .grade-btn.g79 .grade-range { color: var(--accent); }
+  .grade-btn.g1012 .grade-range { color: var(--accent2); }
+
+  .start-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent5));
+    color: white; font-family: var(--font-head); font-size: 20px; font-weight: 800;
+    border: none; padding: 18px 52px; border-radius: 50px; cursor: pointer;
+    box-shadow: var(--glow), 0 4px 24px rgba(108,99,255,0.3);
+    transition: all 0.2s; letter-spacing: 0.5px;
+  }
+  .start-btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 0 40px rgba(108,99,255,0.5), 0 8px 32px rgba(108,99,255,0.4); }
+  .start-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* ===== TOPIC SCREEN ===== */
+  #screen-topics { padding: 0; }
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; background: var(--bg2);
+    border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;
+  }
+  .top-bar-title { font-family: var(--font-head); font-size: 20px; font-weight: 700; }
+  .back-btn {
+    background: none; border: 1.5px solid var(--border); color: var(--text2);
+    font-family: var(--font-body); font-size: 14px; padding: 8px 14px;
+    border-radius: 50px; cursor: pointer; transition: all 0.2s;
+  }
+  .back-btn:hover { border-color: var(--accent); color: var(--text); }
+  .download-btn {
+    background: none; border: 1.5px solid var(--border); color: var(--text2);
+    font-family: var(--font-body); font-size: 13px; padding: 7px 13px;
+    border-radius: 50px; cursor: pointer; transition: all 0.2s;
+  }
+  .download-btn:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  /* STOP MILESTONE POPUP */
+  .milestone-popup {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100;
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .milestone-popup.show { display: flex; }
+  .milestone-card {
+    background: var(--card2); border: 2px solid var(--accent3);
+    border-radius: 24px; padding: 36px 28px; text-align: center; max-width: 300px;
+    box-shadow: 0 0 30px rgba(67,233,123,0.2), var(--shadow);
+    animation: badgePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .milestone-emoji { font-size: 56px; margin-bottom: 10px; display: block; }
+  .milestone-title { font-family: var(--font-head); font-size: 22px; font-weight: 800; margin-bottom: 6px; color: var(--accent3); }
+  .milestone-desc { color: var(--text2); font-size: 14px; margin-bottom: 22px; line-height: 1.5; }
+  .milestone-btns { display: flex; flex-direction: column; gap: 10px; }
+  .milestone-continue {
+    background: var(--accent); border: none; color: white;
+    font-family: var(--font-head); font-size: 15px; font-weight: 800;
+    padding: 12px 24px; border-radius: 50px; cursor: pointer; transition: all 0.2s;
+  }
+  .milestone-stop {
+    background: none; border: 1.5px solid var(--border); color: var(--text2);
+    font-family: var(--font-body); font-size: 14px; font-weight: 700;
+    padding: 11px 24px; border-radius: 50px; cursor: pointer; transition: all 0.2s;
+  }
+  .milestone-stop:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  .topics-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; padding: 20px;
+  }
+  .topic-card {
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: var(--radius); padding: 20px 16px; cursor: pointer;
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .topic-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(108,99,255,0.05));
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .topic-card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: var(--glow); }
+  .topic-card:hover::before { opacity: 1; }
+  .topic-icon { font-size: 32px; margin-bottom: 10px; display: block; }
+  .topic-name { font-family: var(--font-head); font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .topic-desc { font-size: 11px; color: var(--text2); line-height: 1.4; }
+  .topic-progress {
+    margin-top: 10px; height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden;
+  }
+  .topic-progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+
+  /* ===== LEARN SCREEN ===== */
+  #screen-learn { padding: 0; }
+  .learn-header {
+    padding: 16px 20px; background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .learn-topic-icon { font-size: 28px; }
+  .learn-topic-name { font-family: var(--font-head); font-size: 18px; font-weight: 700; }
+  .learn-grade-badge {
+    font-size: 11px; background: rgba(108,99,255,0.2);
+    color: var(--accent); padding: 4px 10px; border-radius: 20px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .learn-header-spacer { flex: 1; }
+
+  .mode-tabs {
+    display: flex; border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+  .mode-tab {
+    flex: 1; padding: 14px; text-align: center; cursor: pointer;
+    font-family: var(--font-head); font-size: 14px; font-weight: 700;
+    color: var(--text2); border-bottom: 2px solid transparent;
+    transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .mode-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .learn-content { flex: 1; overflow-y: auto; padding: 20px; }
+
+  /* Lesson tab */
+  .lesson-card {
+    background: var(--card); border-radius: var(--radius); padding: 24px;
+    border: 1px solid var(--border); margin-bottom: 16px;
+  }
+  .lesson-title { font-family: var(--font-head); font-size: 20px; font-weight: 800; margin-bottom: 12px; }
+  .lesson-body { font-size: 15px; line-height: 1.8; color: var(--text2); }
+  .lesson-example {
+    background: var(--bg3); border-left: 3px solid var(--accent);
+    padding: 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin: 16px 0; font-size: 16px; font-weight: 700; color: var(--text);
+  }
+  .explain-btn {
+    background: rgba(108,99,255,0.15); border: 1.5px solid var(--accent);
+    color: var(--accent); font-family: var(--font-body); font-size: 14px; font-weight: 700;
+    padding: 12px 24px; border-radius: 50px; cursor: pointer; transition: all 0.2s;
+    width: 100%; margin-top: 8px;
+  }
+  .explain-btn:hover { background: var(--accent); color: white; }
+
+  /* Practice tab */
+  .question-card {
+    background: var(--card); border-radius: var(--radius); padding: 24px;
+    border: 1px solid var(--border); margin-bottom: 16px;
+  }
+  .difficulty-bar {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+  }
+  .diff-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+  .diff-dots { display: flex; gap: 4px; }
+  .diff-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--bg3);
+    transition: background 0.3s;
+  }
+  .diff-dot.filled { background: var(--accent); }
+
+  .question-counter { font-size: 12px; color: var(--text3); margin-left: auto; }
+  .question-text {
+    font-family: var(--font-head); font-size: 22px; font-weight: 700;
+    margin-bottom: 20px; line-height: 1.4; color: var(--text);
+  }
+
+  .answer-input {
+    width: 100%; background: var(--bg3); border: 2px solid var(--border);
+    color: var(--text); font-family: var(--font-head); font-size: 22px; font-weight: 700;
+    padding: 14px 18px; border-radius: var(--radius-sm); outline: none;
+    transition: border-color 0.2s; text-align: center;
+  }
+  .answer-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,0.15); }
+  .answer-input.correct { border-color: var(--accent3); box-shadow: 0 0 0 3px rgba(67,233,123,0.15); }
+  .answer-input.wrong { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(255,101,132,0.15); }
+
+  .mc-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .mc-option {
+    background: var(--bg3); border: 2px solid var(--border);
+    color: var(--text); font-family: var(--font-head); font-size: 18px; font-weight: 700;
+    padding: 16px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;
+    text-align: center;
+  }
+  .mc-option:hover { border-color: var(--accent); background: rgba(108,99,255,0.1); }
+  .mc-option.correct { border-color: var(--accent3); background: rgba(67,233,123,0.15); color: var(--accent3); }
+  .mc-option.wrong { border-color: var(--accent2); background: rgba(255,101,132,0.15); color: var(--accent2); }
+  .mc-option.reveal { border-color: var(--accent3); background: rgba(67,233,123,0.08); }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+  .hint-btn {
+    background: rgba(247,151,30,0.15); border: 1.5px solid rgba(247,151,30,0.4);
+    color: var(--accent4); font-family: var(--font-body); font-size: 14px; font-weight: 700;
+    padding: 12px 20px; border-radius: 50px; cursor: pointer; transition: all 0.2s; flex: 1;
+  }
+  .hint-btn:hover { background: rgba(247,151,30,0.25); }
+  .check-btn {
+    background: var(--accent); border: none; color: white;
+    font-family: var(--font-head); font-size: 16px; font-weight: 800;
+    padding: 12px 28px; border-radius: 50px; cursor: pointer; transition: all 0.2s; flex: 2;
+  }
+  .check-btn:hover { transform: translateY(-2px); box-shadow: var(--glow); }
+  .next-btn {
+    background: linear-gradient(135deg, var(--accent3), var(--accent5));
+    border: none; color: #0f0f1a;
+    font-family: var(--font-head); font-size: 16px; font-weight: 800;
+    padding: 12px 28px; border-radius: 50px; cursor: pointer; transition: all 0.2s; flex: 2;
+  }
+  .next-btn:hover { transform: translateY(-2px); }
+
+  .hint-box {
+    background: rgba(247,151,30,0.08); border: 1px solid rgba(247,151,30,0.3);
+    border-radius: var(--radius-sm); padding: 12px 16px; margin-top: 12px;
+    font-size: 14px; color: var(--accent4); display: none; line-height: 1.5;
+  }
+  .feedback-box {
+    border-radius: var(--radius-sm); padding: 14px 18px; margin-top: 12px;
+    font-size: 15px; font-weight: 700; display: none;
+  }
+  .feedback-box.correct { background: rgba(67,233,123,0.1); color: var(--accent3); border: 1px solid rgba(67,233,123,0.3); }
+  .feedback-box.wrong { background: rgba(255,101,132,0.1); color: var(--accent2); border: 1px solid rgba(255,101,132,0.3); }
+
+  /* Streak & progress */
+  .progress-strip {
+    background: var(--bg2); padding: 10px 20px;
+    display: flex; align-items: center; gap: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .streak-badge {
+    display: flex; align-items: center; gap: 5px;
+    font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--accent4);
+  }
+  .progress-bar { flex: 1; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent5)); border-radius: 3px; transition: width 0.4s; }
+  .score-badge { font-size: 13px; color: var(--text2); font-weight: 700; }
+
+  /* Game tab */
+  .game-area { text-align: center; padding: 20px 0; }
+  .game-title { font-family: var(--font-head); font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .game-subtitle { color: var(--text2); font-size: 14px; margin-bottom: 24px; }
+  .timer-ring { position: relative; width: 100px; height: 100px; margin: 0 auto 24px; }
+  .timer-svg { transform: rotate(-90deg); }
+  .timer-track { fill: none; stroke: var(--bg3); stroke-width: 8; }
+  .timer-fill { fill: none; stroke: var(--accent); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 283; transition: stroke-dashoffset 1s linear; }
+  .timer-text {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-size: 28px; font-weight: 800; color: var(--text);
+  }
+  .game-question { font-family: var(--font-head); font-size: 28px; font-weight: 800; margin-bottom: 20px; }
+  .game-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 300px; margin: 0 auto 20px; }
+  .game-option {
+    background: var(--card); border: 2px solid var(--border);
+    color: var(--text); font-family: var(--font-head); font-size: 22px; font-weight: 800;
+    padding: 20px; border-radius: var(--radius); cursor: pointer; transition: all 0.15s;
+  }
+  .game-option:hover { transform: scale(1.05); border-color: var(--accent); box-shadow: var(--glow); }
+  .game-option.correct { border-color: var(--accent3); background: rgba(67,233,123,0.15); animation: pop 0.3s; }
+  .game-option.wrong { border-color: var(--accent2); background: rgba(255,101,132,0.15); animation: shake 0.4s; }
+  @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.12)} 100%{transform:scale(1)} }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .game-score { font-size: 18px; font-weight: 700; color: var(--accent); }
+  .game-start-btn {
+    background: linear-gradient(135deg, var(--accent4), var(--accent2));
+    border: none; color: white; font-family: var(--font-head); font-size: 18px; font-weight: 800;
+    padding: 16px 40px; border-radius: 50px; cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(247,151,30,0.3);
+  }
+  .game-start-btn:hover { transform: translateY(-3px); }
+
+  /* ===== BADGE POPUP ===== */
+  .badge-popup {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100;
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .badge-popup.show { display: flex; }
+  .badge-card {
+    background: var(--card2); border: 2px solid var(--accent);
+    border-radius: 24px; padding: 40px 32px; text-align: center; max-width: 300px;
+    box-shadow: var(--glow), var(--shadow); animation: badgePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes badgePop { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+  .badge-emoji { font-size: 64px; margin-bottom: 12px; display: block; }
+  .badge-title { font-family: var(--font-head); font-size: 24px; font-weight: 800; margin-bottom: 8px; color: var(--accent); }
+  .badge-desc { color: var(--text2); font-size: 15px; margin-bottom: 24px; }
+  .badge-close {
+    background: var(--accent); border: none; color: white;
+    font-family: var(--font-head); font-size: 16px; font-weight: 800;
+    padding: 12px 32px; border-radius: 50px; cursor: pointer;
+  }
+
+  /* ===== LOADING ===== */
+  .ai-loading {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--text2); font-size: 14px; padding: 12px 0;
+  }
+  .dot-pulse { display: flex; gap: 4px; }
+  .dot-pulse span {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .dot-pulse span:nth-child(2) { animation-delay: 0.2s; }
+  .dot-pulse span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,100%{opacity:0.3;transform:scale(0.8)} 50%{opacity:1;transform:scale(1)} }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--card2); border: 1px solid var(--border); border-radius: 50px;
+    padding: 12px 24px; font-size: 14px; font-weight: 700;
+    box-shadow: var(--shadow); z-index: 200; transition: transform 0.3s;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* RESPONSIVE */
+  @media(max-width:380px) {
+    .grade-grid { grid-template-columns: 1fr 1fr; }
+    .topics-grid { grid-template-columns: 1fr; }
+    .mc-options { grid-template-columns: 1fr; }
+    .game-options { grid-template-columns: 1fr 1fr; }
+  }
+  @media(min-width:600px) {
+    .topics-grid { grid-template-columns: repeat(3, 1fr); }
+    #screen-landing, #screen-topics, #screen-learn {
+      max-width: 540px; margin: 0 auto;
+    }
+  }
+
+  /* OFFLINE BANNER */
+  .offline-banner {
+    background: rgba(247,151,30,0.15); border-bottom: 1px solid rgba(247,151,30,0.3);
+    color: var(--accent4); font-size: 12px; text-align: center; padding: 6px;
+    display: none;
+  }
+  .offline-banner.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+
+<!-- OFFLINE BANNER -->
+<div class="offline-banner" id="offline-banner">
+  📡 Offline mode — using pre-loaded content
+</div>
+
+<!-- MILESTONE POPUP -->
+<div class="milestone-popup" id="milestone-popup">
+  <div class="milestone-card">
+    <span class="milestone-emoji" id="milestone-emoji">🎯</span>
+    <div class="milestone-title" id="milestone-title">Milestone reached!</div>
+    <div class="milestone-desc" id="milestone-desc">You hit a score milestone. Want to keep going?</div>
+    <div class="milestone-btns">
+      <button class="milestone-continue" onclick="closeMilestone()">Keep Going! 💪</button>
+      <button class="milestone-stop" onclick="stopAndGoHome()">I'm done for now</button>
+    </div>
+  </div>
+</div>
+
+<!-- BADGE POPUP -->
+<div class="badge-popup" id="badge-popup">
+  <div class="badge-card">
+    <span class="badge-emoji" id="badge-emoji">🏆</span>
+    <div class="badge-title" id="badge-title">Achievement!</div>
+    <div class="badge-desc" id="badge-desc">You did it!</div>
+    <button class="badge-close" onclick="closeBadge()">Awesome! ✨</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== SCREEN: LANDING ===== -->
+<div class="screen active" id="screen-landing">
+  <div class="logo-wrap">
+    <div class="logo-icon">🌉</div>
+    <div class="logo-name">MathBridge</div>
+    <div class="logo-tagline">Free math for every student, everywhere</div>
+  </div>
+
+  <p class="landing-subtitle" id="landing-subtitle">
+    Learn math in your language. Any device. No account needed.
+  </p>
+
+  <div class="lang-section">
+    <div class="lang-label" id="lang-label">Choose your language</div>
+    <div class="lang-grid" id="lang-grid">
+      <button class="lang-btn active" onclick="setLang('en')" data-lang="en">🇺🇸 English</button>
+      <button class="lang-btn" onclick="setLang('es')" data-lang="es">🇪🇸 Español</button>
+      <button class="lang-btn" onclick="setLang('fr')" data-lang="fr">🇫🇷 Français</button>
+      <button class="lang-btn" onclick="setLang('pt')" data-lang="pt">🇧🇷 Português</button>
+      <button class="lang-btn" onclick="setLang('ar')" data-lang="ar">🇸🇦 العربية</button>
+      <button class="lang-btn" onclick="setLang('hi')" data-lang="hi">🇮🇳 हिंदी</button>
+      <button class="lang-btn" onclick="setLang('zh')" data-lang="zh">🇨🇳 中文</button>
+      <button class="lang-btn" onclick="setLang('sw')" data-lang="sw">🇰🇪 Kiswahili</button>
+      <button class="lang-btn" onclick="setLang('bn')" data-lang="bn">🇧🇩 বাংলা</button>
+      <button class="lang-btn" onclick="setLang('ru')" data-lang="ru">🇷🇺 Русский</button>
+      <button class="lang-btn" onclick="setLang('de')" data-lang="de">🇩🇪 Deutsch</button>
+      <button class="lang-btn" onclick="setLang('id')" data-lang="id">🇮🇩 Bahasa</button>
+      <button class="lang-btn" onclick="setLang('tl')" data-lang="tl">🇵🇭 Filipino</button>
+      <button class="lang-btn" onclick="setLang('vi')" data-lang="vi">🇻🇳 Tiếng Việt</button>
+      <button class="lang-btn" onclick="setLang('tr')" data-lang="tr">🇹🇷 Türkçe</button>
+      <button class="lang-btn" onclick="setLang('uk')" data-lang="uk">🇺🇦 Українська</button>
+    </div>
+  </div>
+
+  <div class="grade-section">
+    <div class="section-label" id="grade-label">Select your grade</div>
+    <div class="grade-grid">
+      <button class="grade-btn k3" onclick="setGrade('K3')" data-grade="K3">
+        <span class="grade-range">K–3</span>
+        <span class="grade-desc">Ages 5–9</span>
+      </button>
+      <button class="grade-btn g46" onclick="setGrade('G46')" data-grade="G46">
+        <span class="grade-range">4–6</span>
+        <span class="grade-desc">Ages 9–12</span>
+      </button>
+      <button class="grade-btn g79" onclick="setGrade('G79')" data-grade="G79">
+        <span class="grade-range">7–9</span>
+        <span class="grade-desc">Ages 12–15</span>
+      </button>
+      <button class="grade-btn g1012" onclick="setGrade('G1012')" data-grade="G1012">
+        <span class="grade-range">10–12</span>
+        <span class="grade-desc">Ages 15–18</span>
+      </button>
+    </div>
+  </div>
+
+  <button class="start-btn" id="start-btn" onclick="startApp()" disabled>
+    Start Learning 🚀
+  </button>
+</div>
+
+<!-- ===== SCREEN: TOPICS ===== -->
+<div class="screen" id="screen-topics">
+  <div class="top-bar">
+    <button class="back-btn" onclick="showScreen('landing')">← Back</button>
+    <div class="top-bar-title" id="topics-title">Choose a Topic</div>
+    <button class="download-btn" onclick="downloadApp()" title="Download app">⬇ Save</button>
+  </div>
+  <div class="topics-grid" id="topics-grid"></div>
+</div>
+
+<!-- ===== SCREEN: LEARN ===== -->
+<div class="screen" id="screen-learn">
+  <div class="learn-header">
+    <button class="back-btn" style="padding:6px 12px;font-size:13px;flex-shrink:0" onclick="showScreen('topics')">← Topics</button>
+    <span class="learn-topic-icon" id="learn-icon">📐</span>
+    <span class="learn-topic-name" id="learn-topic-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Topic</span>
+    <div class="learn-header-spacer"></div>
+    <span class="learn-grade-badge" id="learn-grade-badge">K–3</span>
+    <button class="download-btn" onclick="downloadApp()" title="Download app" style="flex-shrink:0">⬇ Save</button>
+  </div>
+
+  <div class="progress-strip">
+    <div class="streak-badge">🔥 <span id="streak-count">0</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="score-badge">⭐ <span id="score-count">0</span></div>
+  </div>
+
+  <div class="mode-tabs">
+    <div class="mode-tab active" onclick="switchTab('lesson')" id="tab-lesson">📖 Lesson</div>
+    <div class="mode-tab" onclick="switchTab('practice')" id="tab-practice">✏️ Practice</div>
+    <div class="mode-tab" onclick="switchTab('game')" id="tab-game">🎮 Game</div>
+  </div>
+
+  <!-- Lesson -->
+  <div class="learn-content" id="content-lesson">
+    <div class="lesson-card" id="lesson-card">
+      <div class="lesson-title" id="lesson-title">Loading...</div>
+      <div class="lesson-body" id="lesson-body"></div>
+      <div class="lesson-example" id="lesson-example"></div>
+    </div>
+    <button class="explain-btn" id="explain-btn" onclick="explainDifferently()">
+      🤔 Explain it differently
+    </button>
+    <div class="ai-loading" id="lesson-loading" style="display:none">
+      <div class="dot-pulse"><span></span><span></span><span></span></div>
+      Generating new explanation...
+    </div>
+  </div>
+
+  <!-- Practice -->
+  <div class="learn-content" id="content-practice" style="display:none">
+    <div class="question-card" id="question-card">
+      <div class="difficulty-bar">
+        <span class="diff-label" id="diff-label">Easy</span>
+        <div class="diff-dots" id="diff-dots">
+          <div class="diff-dot filled"></div>
+          <div class="diff-dot"></div>
+          <div class="diff-dot"></div>
+          <div class="diff-dot"></div>
+        </div>
+        <span class="question-counter" id="q-counter">Q 1</span>
+      </div>
+      <div class="question-text" id="question-text">Loading question...</div>
+      <div id="answer-area"></div>
+      <div class="hint-box" id="hint-box"></div>
+      <div class="feedback-box" id="feedback-box"></div>
+      <div class="btn-row" id="btn-row">
+        <button class="hint-btn" onclick="showHint()">💡 Hint</button>
+        <button class="check-btn" id="check-btn" onclick="checkAnswer()">Check ✓</button>
+      </div>
+    </div>
+    <div class="ai-loading" id="practice-loading" style="display:none">
+      <div class="dot-pulse"><span></span><span></span><span></span></div>
+      Generating question...
+    </div>
+  </div>
+
+  <!-- Game -->
+  <div class="learn-content" id="content-game" style="display:none">
+    <div class="game-area" id="game-area">
+      <div class="game-title" id="game-title">⚡ Speed Math</div>
+      <div class="game-subtitle" id="game-subtitle">Answer as fast as you can!</div>
+      <button class="game-start-btn" onclick="startGame()">Play Now! 🎮</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const STATE = {
+  lang: 'en',
+  grade: null,
+  topic: null,
+  tab: 'lesson',
+  questionIndex: 0,
+  correctStreak: 0,
+  wrongStreak: 0,
+  score: 0,
+  diffLevel: 0, // 0=Easy,1=Medium,2=Hard,3=Challenge
+  answered: false,
+  currentQuestion: null,
+  gameActive: false,
+  gameScore: 0,
+  gameTimer: null,
+  gameTimeLeft: 15,
+  totalQuestions: 0,
+  badges: [],
+  isOnline: navigator.onLine
+};
+
+// ============================================================
+// TRANSLATIONS
+// ============================================================
+const T = {
+  en: {
+    subtitle: 'Learn math in your language. Any device. No account needed.',
+    chooseLang: 'Choose your language',
+    selectGrade: 'Select your grade',
+    startBtn: 'Start Learning 🚀',
+    chooseTopic: 'Choose a Topic',
+    lesson: '📖 Lesson',
+    practice: '✏️ Practice',
+    game: '🎮 Game',
+    hint: '💡 Hint',
+    check: 'Check ✓',
+    next: 'Next →',
+    explainDiff: '🤔 Explain it differently',
+    easy: 'Easy', medium: 'Medium', hard: 'Hard', challenge: 'Challenge',
+    correct: '✅ Correct! Great job!',
+    wrong: '❌ Not quite.',
+    playNow: 'Play Now! 🎮',
+    speedMath: '⚡ Speed Math',
+    answerFast: 'Answer as fast as you can!',
+    offline: '📡 Offline mode — using pre-loaded content',
+    typeAnswer: 'Type your answer...',
+    generatingQ: 'Generating question...',
+    generatingExp: 'Generating new explanation...',
+  },
+  es: {
+    subtitle: 'Aprende matemáticas en tu idioma. Cualquier dispositivo. Sin cuenta.',
+    chooseLang: 'Elige tu idioma',
+    selectGrade: 'Selecciona tu grado',
+    startBtn: 'Empezar a Aprender 🚀',
+    chooseTopic: 'Elige un Tema',
+    lesson: '📖 Lección',
+    practice: '✏️ Práctica',
+    game: '🎮 Juego',
+    hint: '💡 Pista',
+    check: 'Verificar ✓',
+    next: 'Siguiente →',
+    explainDiff: '🤔 Explícalo de otra manera',
+    easy: 'Fácil', medium: 'Medio', hard: 'Difícil', challenge: 'Desafío',
+    correct: '✅ ¡Correcto! ¡Buen trabajo!',
+    wrong: '❌ No del todo.',
+    playNow: '¡Jugar Ahora! 🎮',
+    speedMath: '⚡ Matemáticas Rápidas',
+    answerFast: '¡Responde lo más rápido que puedas!',
+    offline: '📡 Modo sin conexión',
+    typeAnswer: 'Escribe tu respuesta...',
+    generatingQ: 'Generando pregunta...',
+    generatingExp: 'Generando nueva explicación...',
+  },
+  fr: {
+    subtitle: 'Apprends les maths dans ta langue. N\'importe quel appareil. Sans compte.',
+    chooseLang: 'Choisissez votre langue',
+    selectGrade: 'Sélectionnez votre niveau',
+    startBtn: 'Commencer à Apprendre 🚀',
+    chooseTopic: 'Choisissez un Sujet',
+    lesson: '📖 Leçon',
+    practice: '✏️ Pratique',
+    game: '🎮 Jeu',
+    hint: '💡 Indice',
+    check: 'Vérifier ✓',
+    next: 'Suivant →',
+    explainDiff: '🤔 Expliquer autrement',
+    easy: 'Facile', medium: 'Moyen', hard: 'Difficile', challenge: 'Défi',
+    correct: '✅ Correct ! Bon travail !',
+    wrong: '❌ Pas tout à fait.',
+    playNow: 'Jouer Maintenant ! 🎮',
+    speedMath: '⚡ Maths Rapides',
+    answerFast: 'Répondez le plus vite possible !',
+    offline: '📡 Mode hors ligne',
+    typeAnswer: 'Tapez votre réponse...',
+    generatingQ: 'Génération de question...',
+    generatingExp: 'Génération d\'explication...',
+  },
+  pt: {
+    subtitle: 'Aprenda matemática no seu idioma. Qualquer dispositivo. Sem conta.',
+    chooseLang: 'Escolha seu idioma',
+    selectGrade: 'Selecione seu nível',
+    startBtn: 'Começar a Aprender 🚀',
+    chooseTopic: 'Escolha um Tópico',
+    lesson: '📖 Lição',
+    practice: '✏️ Prática',
+    game: '🎮 Jogo',
+    hint: '💡 Dica',
+    check: 'Verificar ✓',
+    next: 'Próximo →',
+    explainDiff: '🤔 Explicar de outra forma',
+    easy: 'Fácil', medium: 'Médio', hard: 'Difícil', challenge: 'Desafio',
+    correct: '✅ Correto! Bom trabalho!',
+    wrong: '❌ Não exatamente.',
+    playNow: 'Jogar Agora! 🎮',
+    speedMath: '⚡ Matemática Rápida',
+    answerFast: 'Responda o mais rápido que puder!',
+    offline: '📡 Modo offline',
+    typeAnswer: 'Digite sua resposta...',
+    generatingQ: 'Gerando pergunta...',
+    generatingExp: 'Gerando nova explicação...',
+  },
+  ar: {
+    subtitle: 'تعلم الرياضيات بلغتك. أي جهاز. لا حساب مطلوب.',
+    chooseLang: 'اختر لغتك',
+    selectGrade: 'اختر صفك الدراسي',
+    startBtn: 'ابدأ التعلم 🚀',
+    chooseTopic: 'اختر موضوعاً',
+    lesson: '📖 درس',
+    practice: '✏️ تمرين',
+    game: '🎮 لعبة',
+    hint: '💡 تلميح',
+    check: 'تحقق ✓',
+    next: 'التالي →',
+    explainDiff: '🤔 اشرح بطريقة مختلفة',
+    easy: 'سهل', medium: 'متوسط', hard: 'صعب', challenge: 'تحدي',
+    correct: '✅ صحيح! عمل رائع!',
+    wrong: '❌ ليس تماماً.',
+    playNow: 'العب الآن! 🎮',
+    speedMath: '⚡ رياضيات سريعة',
+    answerFast: 'أجب بأسرع ما يمكن!',
+    offline: '📡 وضع عدم الاتصال',
+    typeAnswer: 'اكتب إجابتك...',
+    generatingQ: 'توليد سؤال...',
+    generatingExp: 'توليد شرح جديد...',
+  },
+  hi: {
+    subtitle: 'अपनी भाषा में गणित सीखें। कोई भी डिवाइस। कोई अकाउंट नहीं।',
+    chooseLang: 'अपनी भाषा चुनें',
+    selectGrade: 'अपनी कक्षा चुनें',
+    startBtn: 'सीखना शुरू करें 🚀',
+    chooseTopic: 'विषय चुनें',
+    lesson: '📖 पाठ',
+    practice: '✏️ अभ्यास',
+    game: '🎮 खेल',
+    hint: '💡 संकेत',
+    check: 'जाँचें ✓',
+    next: 'अगला →',
+    explainDiff: '🤔 अलग तरह से समझाएं',
+    easy: 'आसान', medium: 'मध्यम', hard: 'कठिन', challenge: 'चुनौती',
+    correct: '✅ सही! शाबाश!',
+    wrong: '❌ सही नहीं।',
+    playNow: 'अभी खेलें! 🎮',
+    speedMath: '⚡ स्पीड मैथ',
+    answerFast: 'जितना हो सके जल्दी जवाब दें!',
+    offline: '📡 ऑफलाइन मोड',
+    typeAnswer: 'अपना जवाब लिखें...',
+    generatingQ: 'सवाल बना रहे हैं...',
+    generatingExp: 'नई व्याख्या बना रहे हैं...',
+  },
+  zh: {
+    subtitle: '用你的语言学数学。任何设备。无需账号。',
+    chooseLang: '选择你的语言',
+    selectGrade: '选择你的年级',
+    startBtn: '开始学习 🚀',
+    chooseTopic: '选择主题',
+    lesson: '📖 课程',
+    practice: '✏️ 练习',
+    game: '🎮 游戏',
+    hint: '💡 提示',
+    check: '检查 ✓',
+    next: '下一个 →',
+    explainDiff: '🤔 换个方式解释',
+    easy: '简单', medium: '中等', hard: '困难', challenge: '挑战',
+    correct: '✅ 正确！干得好！',
+    wrong: '❌ 不对。',
+    playNow: '现在玩！🎮',
+    speedMath: '⚡ 速算',
+    answerFast: '尽快回答！',
+    offline: '📡 离线模式',
+    typeAnswer: '输入你的答案...',
+    generatingQ: '正在生成题目...',
+    generatingExp: '正在生成新解释...',
+  },
+  sw: {
+    subtitle: 'Jifunze hisabati kwa lugha yako. Kifaa chochote. Bila akaunti.',
+    chooseLang: 'Chagua lugha yako',
+    selectGrade: 'Chagua darasa lako',
+    startBtn: 'Anza Kujifunza 🚀',
+    chooseTopic: 'Chagua Mada',
+    lesson: '📖 Somo',
+    practice: '✏️ Mazoezi',
+    game: '🎮 Mchezo',
+    hint: '💡 Kidokezo',
+    check: 'Angalia ✓',
+    next: 'Inayofuata →',
+    explainDiff: '🤔 Eleza kwa njia nyingine',
+    easy: 'Rahisi', medium: 'Wastani', hard: 'Ngumu', challenge: 'Changamoto',
+    correct: '✅ Sahihi! Hongera!',
+    wrong: '❌ Si sahihi.',
+    playNow: 'Cheza Sasa! 🎮',
+    speedMath: '⚡ Hisabati ya Kasi',
+    answerFast: 'Jibu haraka iwezekanavyo!',
+    offline: '📡 Hali ya nje ya mtandao',
+    typeAnswer: 'Andika jibu lako...',
+    generatingQ: 'Inaunda swali...',
+    generatingExp: 'Inaunda maelezo mapya...',
+  },
+  bn: {
+    subtitle: 'তোমার ভাষায় গণিত শেখো। যেকোনো ডিভাইস। কোনো অ্যাকাউন্ট নেই।',
+    chooseLang: 'তোমার ভাষা বেছে নাও',
+    selectGrade: 'তোমার শ্রেণি বেছে নাও',
+    startBtn: 'শেখা শুরু করো 🚀',
+    chooseTopic: 'বিষয় বেছে নাও',
+    lesson: '📖 পাঠ',
+    practice: '✏️ অনুশীলন',
+    game: '🎮 খেলা',
+    hint: '💡 ইঙ্গিত',
+    check: 'যাচাই করো ✓',
+    next: 'পরবর্তী →',
+    explainDiff: '🤔 অন্যভাবে বোঝাও',
+    easy: 'সহজ', medium: 'মাঝারি', hard: 'কঠিন', challenge: 'চ্যালেঞ্জ',
+    correct: '✅ সঠিক! বাহ!',
+    wrong: '❌ ঠিক নয়।',
+    playNow: 'এখনই খেলো! 🎮',
+    speedMath: '⚡ দ্রুত গণিত',
+    answerFast: 'যত দ্রুত পারো উত্তর দাও!',
+    offline: '📡 অফলাইন মোড',
+    typeAnswer: 'তোমার উত্তর লেখো...',
+    generatingQ: 'প্রশ্ন তৈরি হচ্ছে...',
+    generatingExp: 'নতুন ব্যাখ্যা তৈরি হচ্ছে...',
+  },
+  ru: {
+    subtitle: 'Учи математику на своём языке. Любое устройство. Без аккаунта.',
+    chooseLang: 'Выберите язык',
+    selectGrade: 'Выберите класс',
+    startBtn: 'Начать учиться 🚀',
+    chooseTopic: 'Выберите тему',
+    lesson: '📖 Урок',
+    practice: '✏️ Практика',
+    game: '🎮 Игра',
+    hint: '💡 Подсказка',
+    check: 'Проверить ✓',
+    next: 'Далее →',
+    explainDiff: '🤔 Объяснить иначе',
+    easy: 'Легко', medium: 'Средне', hard: 'Сложно', challenge: 'Вызов',
+    correct: '✅ Правильно! Молодец!',
+    wrong: '❌ Неверно.',
+    playNow: 'Играть! 🎮',
+    speedMath: '⚡ Быстрая математика',
+    answerFast: 'Отвечай как можно быстрее!',
+    offline: '📡 Офлайн режим',
+    typeAnswer: 'Введи ответ...',
+    generatingQ: 'Создание вопроса...',
+    generatingExp: 'Создание нового объяснения...',
+  },
+  de: {
+    subtitle: 'Lerne Mathematik in deiner Sprache. Jedes Gerät. Kein Konto nötig.',
+    chooseLang: 'Wähle deine Sprache',
+    selectGrade: 'Wähle deine Klasse',
+    startBtn: 'Jetzt Lernen 🚀',
+    chooseTopic: 'Thema wählen',
+    lesson: '📖 Lektion',
+    practice: '✏️ Übung',
+    game: '🎮 Spiel',
+    hint: '💡 Hinweis',
+    check: 'Prüfen ✓',
+    next: 'Weiter →',
+    explainDiff: '🤔 Anders erklären',
+    easy: 'Leicht', medium: 'Mittel', hard: 'Schwer', challenge: 'Herausforderung',
+    correct: '✅ Richtig! Super!',
+    wrong: '❌ Leider falsch.',
+    playNow: 'Jetzt Spielen! 🎮',
+    speedMath: '⚡ Schnelle Mathematik',
+    answerFast: 'Antworte so schnell wie möglich!',
+    offline: '📡 Offline-Modus',
+    typeAnswer: 'Gib deine Antwort ein...',
+    generatingQ: 'Frage wird erstellt...',
+    generatingExp: 'Neue Erklärung wird erstellt...',
+  },
+  id: {
+    subtitle: 'Pelajari matematika dalam bahasamu. Perangkat apa saja. Tanpa akun.',
+    chooseLang: 'Pilih bahasamu',
+    selectGrade: 'Pilih kelasmu',
+    startBtn: 'Mulai Belajar 🚀',
+    chooseTopic: 'Pilih Topik',
+    lesson: '📖 Pelajaran',
+    practice: '✏️ Latihan',
+    game: '🎮 Permainan',
+    hint: '💡 Petunjuk',
+    check: 'Periksa ✓',
+    next: 'Berikutnya →',
+    explainDiff: '🤔 Jelaskan dengan cara lain',
+    easy: 'Mudah', medium: 'Sedang', hard: 'Sulit', challenge: 'Tantangan',
+    correct: '✅ Benar! Hebat!',
+    wrong: '❌ Belum tepat.',
+    playNow: 'Main Sekarang! 🎮',
+    speedMath: '⚡ Matematika Cepat',
+    answerFast: 'Jawab secepat mungkin!',
+    offline: '📡 Mode offline',
+    typeAnswer: 'Ketik jawabanmu...',
+    generatingQ: 'Membuat pertanyaan...',
+    generatingExp: 'Membuat penjelasan baru...',
+  },
+  tl: {
+    subtitle: 'Matuto ng matematika sa iyong wika. Anumang device. Walang account.',
+    chooseLang: 'Piliin ang iyong wika',
+    selectGrade: 'Piliin ang iyong baitang',
+    startBtn: 'Magsimulang Matuto 🚀',
+    chooseTopic: 'Pumili ng Paksa',
+    lesson: '📖 Aralin',
+    practice: '✏️ Pagsasanay',
+    game: '🎮 Laro',
+    hint: '💡 Pahiwatig',
+    check: 'Suriin ✓',
+    next: 'Susunod →',
+    explainDiff: '🤔 Ipaliwanag nang iba',
+    easy: 'Madali', medium: 'Katamtaman', hard: 'Mahirap', challenge: 'Hamon',
+    correct: '✅ Tama! Magaling!',
+    wrong: '❌ Hindi tama.',
+    playNow: 'Maglaro Na! 🎮',
+    speedMath: '⚡ Mabilis na Math',
+    answerFast: 'Sagutin nang pinakamabilis!',
+    offline: '📡 Offline mode',
+    typeAnswer: 'I-type ang iyong sagot...',
+    generatingQ: 'Gumagawa ng tanong...',
+    generatingExp: 'Gumagawa ng bagong paliwanag...',
+  },
+  vi: {
+    subtitle: 'Học toán bằng ngôn ngữ của bạn. Bất kỳ thiết bị nào. Không cần tài khoản.',
+    chooseLang: 'Chọn ngôn ngữ của bạn',
+    selectGrade: 'Chọn lớp của bạn',
+    startBtn: 'Bắt Đầu Học 🚀',
+    chooseTopic: 'Chọn Chủ Đề',
+    lesson: '📖 Bài học',
+    practice: '✏️ Luyện tập',
+    game: '🎮 Trò chơi',
+    hint: '💡 Gợi ý',
+    check: 'Kiểm tra ✓',
+    next: 'Tiếp theo →',
+    explainDiff: '🤔 Giải thích cách khác',
+    easy: 'Dễ', medium: 'Trung bình', hard: 'Khó', challenge: 'Thách thức',
+    correct: '✅ Đúng rồi! Giỏi lắm!',
+    wrong: '❌ Chưa đúng.',
+    playNow: 'Chơi Ngay! 🎮',
+    speedMath: '⚡ Toán Nhanh',
+    answerFast: 'Trả lời nhanh nhất có thể!',
+    offline: '📡 Chế độ ngoại tuyến',
+    typeAnswer: 'Nhập câu trả lời...',
+    generatingQ: 'Đang tạo câu hỏi...',
+    generatingExp: 'Đang tạo giải thích mới...',
+  },
+  tr: {
+    subtitle: 'Matematiği kendi dilinde öğren. Her cihazda. Hesap gerekmez.',
+    chooseLang: 'Dilini seç',
+    selectGrade: 'Sınıfını seç',
+    startBtn: 'Öğrenmeye Başla 🚀',
+    chooseTopic: 'Konu Seç',
+    lesson: '📖 Ders',
+    practice: '✏️ Alıştırma',
+    game: '🎮 Oyun',
+    hint: '💡 İpucu',
+    check: 'Kontrol Et ✓',
+    next: 'Sonraki →',
+    explainDiff: '🤔 Farklı şekilde açıkla',
+    easy: 'Kolay', medium: 'Orta', hard: 'Zor', challenge: 'Meydan okuma',
+    correct: '✅ Doğru! Harika!',
+    wrong: '❌ Yanlış.',
+    playNow: 'Şimdi Oyna! 🎮',
+    speedMath: '⚡ Hızlı Matematik',
+    answerFast: 'Mümkün olduğunca hızlı cevapla!',
+    offline: '📡 Çevrimdışı mod',
+    typeAnswer: 'Cevabını yaz...',
+    generatingQ: 'Soru oluşturuluyor...',
+    generatingExp: 'Yeni açıklama oluşturuluyor...',
+  },
+  uk: {
+    subtitle: 'Вчи математику своєю мовою. Будь-який пристрій. Без акаунту.',
+    chooseLang: 'Оберіть мову',
+    selectGrade: 'Оберіть клас',
+    startBtn: 'Почати навчання 🚀',
+    chooseTopic: 'Оберіть тему',
+    lesson: '📖 Урок',
+    practice: '✏️ Практика',
+    game: '🎮 Гра',
+    hint: '💡 Підказка',
+    check: 'Перевірити ✓',
+    next: 'Далі →',
+    explainDiff: '🤔 Пояснити інакше',
+    easy: 'Легко', medium: 'Середньо', hard: 'Важко', challenge: 'Виклик',
+    correct: '✅ Правильно! Молодець!',
+    wrong: '❌ Неправильно.',
+    playNow: 'Грати! 🎮',
+    speedMath: '⚡ Швидка математика',
+    answerFast: 'Відповідай якомога швидше!',
+    offline: '📡 Офлайн режим',
+    typeAnswer: 'Введи відповідь...',
+    generatingQ: 'Створення питання...',
+    generatingExp: 'Створення нового пояснення...',
+  },
+};
+
+function t(key) { return (T[STATE.lang] || T.en)[key] || T.en[key] || key; }
+
+// ============================================================
+// CURRICULUM
+// ============================================================
+const CURRICULUM = {
+  K3: [
+    { id:'counting', icon:'🔢', name:{en:'Counting',es:'Contar',fr:'Compter',pt:'Contar',ar:'العد',hi:'गिनती'}, desc:{en:'Numbers 1–100',es:'Números 1–100',fr:'Nombres 1–100',pt:'Números 1–100',ar:'الأرقام ١–١٠٠',hi:'1–100 तक के अंक'}, color:'#43e97b' },
+    { id:'addition', icon:'➕', name:{en:'Addition',es:'Suma',fr:'Addition',pt:'Adição',ar:'الجمع',hi:'जोड़'}, desc:{en:'Adding numbers',es:'Sumando números',fr:'Additionner',pt:'Somar números',ar:'جمع الأرقام',hi:'संख्याएं जोड़ना'}, color:'#6c63ff' },
+    { id:'subtraction', icon:'➖', name:{en:'Subtraction',es:'Resta',fr:'Soustraction',pt:'Subtração',ar:'الطرح',hi:'घटाव'}, desc:{en:'Taking away',es:'Restar',fr:'Soustraire',pt:'Subtrair',ar:'طرح الأرقام',hi:'घटाना'}, color:'#ff6584' },
+    { id:'shapes', icon:'🔷', name:{en:'Shapes',es:'Formas',fr:'Formes',pt:'Formas',ar:'الأشكال',hi:'आकार'}, desc:{en:'2D & 3D shapes',es:'Formas 2D y 3D',fr:'Formes 2D et 3D',pt:'Formas 2D e 3D',ar:'الأشكال ٢د و ٣د',hi:'2D और 3D आकार'}, color:'#f7971e' },
+  ],
+  G46: [
+    { id:'multiplication', icon:'✖️', name:{en:'Multiplication',es:'Multiplicación',fr:'Multiplication',pt:'Multiplicação',ar:'الضرب',hi:'गुणन'}, desc:{en:'Times tables',es:'Tablas de multiplicar',fr:'Tables de multiplication',pt:'Tabuada',ar:'جداول الضرب',hi:'पहाड़े'}, color:'#43e97b' },
+    { id:'division', icon:'➗', name:{en:'Division',es:'División',fr:'Division',pt:'Divisão',ar:'القسمة',hi:'भाग'}, desc:{en:'Splitting equally',es:'Dividir en partes iguales',fr:'Diviser également',pt:'Dividir igualmente',ar:'التقسيم المتساوي',hi:'बराबर बांटना'}, color:'#6c63ff' },
+    { id:'fractions', icon:'🍕', name:{en:'Fractions',es:'Fracciones',fr:'Fractions',pt:'Frações',ar:'الكسور',hi:'भिन्न'}, desc:{en:'Parts of a whole',es:'Partes de un todo',fr:'Parties d\'un tout',pt:'Partes de um todo',ar:'أجزاء من كل',hi:'पूर्ण का भाग'}, color:'#ff6584' },
+    { id:'decimals', icon:'🔟', name:{en:'Decimals',es:'Decimales',fr:'Décimaux',pt:'Decimais',ar:'الأعداد العشرية',hi:'दशमलव'}, desc:{en:'Tenths & hundredths',es:'Décimas y centésimas',fr:'Dixièmes et centièmes',pt:'Décimos e centésimos',ar:'الأعشار والأجزاء من المئة',hi:'दसवाँ और सौवाँ'}, color:'#f7971e' },
+    { id:'geometry', icon:'📐', name:{en:'Geometry',es:'Geometría',fr:'Géométrie',pt:'Geometria',ar:'الهندسة',hi:'ज्यामिति'}, desc:{en:'Area & perimeter',es:'Área y perímetro',fr:'Aire et périmètre',pt:'Área e perímetro',ar:'المساحة والمحيط',hi:'क्षेत्रफल और परिधि'}, color:'#38f9d7' },
+  ],
+  G79: [
+    { id:'algebra', icon:'🔣', name:{en:'Algebra',es:'Álgebra',fr:'Algèbre',pt:'Álgebra',ar:'الجبر',hi:'बीजगणित'}, desc:{en:'Solving for x',es:'Resolver para x',fr:'Résoudre pour x',pt:'Resolvendo x',ar:'إيجاد قيمة x',hi:'x के लिए हल करना'}, color:'#6c63ff' },
+    { id:'ratios', icon:'⚖️', name:{en:'Ratios',es:'Razones',fr:'Ratios',pt:'Razões',ar:'النسب',hi:'अनुपात'}, desc:{en:'Comparing quantities',es:'Comparar cantidades',fr:'Comparer des quantités',pt:'Comparando quantidades',ar:'مقارنة الكميات',hi:'मात्राओं की तुलना'}, color:'#43e97b' },
+    { id:'percentages', icon:'💯', name:{en:'Percentages',es:'Porcentajes',fr:'Pourcentages',pt:'Porcentagens',ar:'النسب المئوية',hi:'प्रतिशत'}, desc:{en:'Parts per hundred',es:'Partes por ciento',fr:'Parties par cent',pt:'Partes por cento',ar:'أجزاء من المئة',hi:'प्रति सौ भाग'}, color:'#ff6584' },
+    { id:'statistics', icon:'📊', name:{en:'Statistics',es:'Estadística',fr:'Statistiques',pt:'Estatística',ar:'الإحصاء',hi:'सांख्यिकी'}, desc:{en:'Mean, median, mode',es:'Media, mediana, moda',fr:'Moyenne, médiane, mode',pt:'Média, mediana, moda',ar:'المتوسط والوسيط والمنوال',hi:'माध्य, माध्यिका, बहुलक'}, color:'#f7971e' },
+    { id:'integers', icon:'↔️', name:{en:'Integers',es:'Enteros',fr:'Entiers',pt:'Inteiros',ar:'الأعداد الصحيحة',hi:'पूर्णांक'}, desc:{en:'Positive & negative',es:'Positivos y negativos',fr:'Positifs et négatifs',pt:'Positivos e negativos',ar:'موجب وسالب',hi:'धनात्मक और ऋणात्मक'}, color:'#38f9d7' },
+  ],
+  G1012: [
+    { id:'linear', icon:'📈', name:{en:'Linear Equations',es:'Ecuaciones Lineales',fr:'Équations Linéaires',pt:'Equações Lineares',ar:'المعادلات الخطية',hi:'रैखिक समीकरण'}, desc:{en:'y = mx + b',es:'y = mx + b',fr:'y = mx + b',pt:'y = mx + b',ar:'ص = ميل × س + ث',hi:'y = mx + b'}, color:'#6c63ff' },
+    { id:'quadratics', icon:'〰️', name:{en:'Quadratics',es:'Cuadráticas',fr:'Quadratiques',pt:'Quadráticas',ar:'المعادلات التربيعية',hi:'द्विघात'}, desc:{en:'ax² + bx + c',es:'ax² + bx + c',fr:'ax² + bx + c',pt:'ax² + bx + c',ar:'أ×س² + ب×س + ج',hi:'ax² + bx + c'}, color:'#43e97b' },
+    { id:'trigonometry', icon:'📡', name:{en:'Trigonometry',es:'Trigonometría',fr:'Trigonométrie',pt:'Trigonometria',ar:'علم المثلثات',hi:'त्रिकोणमिति'}, desc:{en:'Sin, cos, tan',es:'Seno, coseno, tangente',fr:'Sinus, cosinus, tangente',pt:'Seno, cosseno, tangente',ar:'جا، جتا، ظا',hi:'साइन, कोसाइन, टैन'}, color:'#ff6584' },
+    { id:'probability', icon:'🎲', name:{en:'Probability',es:'Probabilidad',fr:'Probabilité',pt:'Probabilidade',ar:'الاحتمالات',hi:'प्रायिकता'}, desc:{en:'Chance & likelihood',es:'Probabilidad y azar',fr:'Chance et probabilité',pt:'Chance e probabilidade',ar:'الفرصة والاحتمال',hi:'मौका और संभावना'}, color:'#f7971e' },
+  ]
+};
+
+// ============================================================
+// OFFLINE QUESTION BANK — 10-15 questions per difficulty level
+// ============================================================
+const OFFLINE_BANK = {
+  counting: {
+    easy:[
+      {q:'What number comes after 7?',a:'8',hint:'Count: 6,7,…',mc:['7','8','9','10'],type:'mc'},
+      {q:'How many fingers are on 2 hands?',a:'10',hint:'5 on each hand',mc:['8','9','10','12'],type:'mc'},
+      {q:'What is 3 + 2?',a:'5',hint:'Count on 2 from 3',mc:['4','5','6','7'],type:'mc'},
+      {q:'What number comes before 5?',a:'4',hint:'Count backwards from 5',mc:['3','4','5','6'],type:'mc'},
+      {q:'How many sides does a square have?',a:'4',hint:'Count each side',mc:['3','4','5','6'],type:'mc'},
+      {q:'What is 1 + 1?',a:'2',hint:'One group of 1, plus one more',mc:['1','2','3','4'],type:'mc'},
+      {q:'Count the stars: ⭐⭐⭐⭐⭐⭐',a:'6',hint:'Point to each star as you count',mc:['5','6','7','8'],type:'mc'},
+      {q:'What number is between 8 and 10?',a:'9',hint:'8, ?, 10',mc:['7','9','11','6'],type:'mc'},
+      {q:'What is 2 + 3?',a:'5',hint:'2 and then 3 more',mc:['4','5','6','7'],type:'mc'},
+      {q:'How many legs does a dog have?',a:'4',hint:'Count front and back legs',mc:['2','3','4','6'],type:'mc'},
+      {q:'What number comes after 19?',a:'20',hint:'The next ten starts here',mc:['18','20','21','22'],type:'mc'},
+      {q:'How many days in a week?',a:'7',hint:'Mon,Tue,Wed,Thu,Fri,Sat,Sun',mc:['5','6','7','8'],type:'mc'},
+    ],
+    medium:[
+      {q:'What number comes before 20?',a:'19',hint:'Count backwards from 20',mc:['17','18','19','21'],type:'mc'},
+      {q:'Count by 2s: 2, 4, 6, ___',a:'8',hint:'Add 2 each time',mc:['7','8','9','10'],type:'mc'},
+      {q:'Count by 5s: 5, 10, 15, ___',a:'20',hint:'Add 5 each time',mc:['16','18','20','25'],type:'mc'},
+      {q:'What is 10 + 7?',a:'17',hint:'10 plus 7 more',mc:['16','17','18','19'],type:'mc'},
+      {q:'What is 20 - 5?',a:'15',hint:'Start at 20, count back 5',mc:['14','15','16','17'],type:'mc'},
+      {q:'Count by 10s: 10, 20, 30, ___',a:'40',hint:'Add 10 each time',mc:['35','40','45','50'],type:'mc'},
+      {q:'What is 13 + 6?',a:'19',hint:'13 and 6 more',mc:['17','18','19','20'],type:'mc'},
+      {q:'How many tens are in 50?',a:'5',hint:'10, 20, 30, 40, 50',mc:['4','5','6','7'],type:'mc'},
+      {q:'What is 25 - 10?',a:'15',hint:'25 take away 10',mc:['13','14','15','16'],type:'mc'},
+      {q:'Count by 3s: 3, 6, 9, ___',a:'12',hint:'Add 3 each time',mc:['10','11','12','13'],type:'mc'},
+    ],
+    hard:[
+      {q:'What is 15 + 23?',a:'38',hint:'Add tens: 10+20=30, then 5+3=8',type:'input'},
+      {q:'What is 47 - 12?',a:'35',hint:'Subtract tens first: 40-10=30, then 7-2=5',type:'input'},
+      {q:'What is 36 + 45?',a:'81',hint:'30+40=70, 6+5=11, total=81',type:'input'},
+      {q:'What is 63 - 28?',a:'35',hint:'Borrow: 13-8=5, 5-2=3, answer=35',type:'input'},
+      {q:'What is 54 + 37?',a:'91',hint:'50+30=80, 4+7=11, total=91',type:'input'},
+      {q:'What is 72 - 45?',a:'27',hint:'Borrow: 12-5=7, 6-4=2',type:'input'},
+      {q:'Count by 4s: 4, 8, 12, 16, ___',a:'20',hint:'Add 4 each time',type:'input'},
+      {q:'What is 89 - 34?',a:'55',hint:'80-30=50, 9-4=5',type:'input'},
+      {q:'What is 26 + 58?',a:'84',hint:'20+50=70, 6+8=14, carry: 84',type:'input'},
+      {q:'What is 91 - 47?',a:'44',hint:'Borrow: 11-7=4, 8-4=4',type:'input'},
+    ],
+    challenge:[
+      {q:'I have 54 apples. I give away 27. How many do I have?',a:'27',hint:'54 minus 27: borrow from tens',type:'input'},
+      {q:'There are 135 students. 68 are girls. How many are boys?',a:'67',hint:'135 - 68, borrow carefully',type:'input'},
+      {q:'What is 247 + 386?',a:'633',hint:'Add ones 7+6=13, carry 1, tens 4+8+1=13, carry 1, hundreds 2+3+1=6',type:'input'},
+      {q:'A store has 302 items. 178 are sold. How many remain?',a:'124',hint:'302 - 178, borrow from hundreds',type:'input'},
+      {q:'What is 500 - 263?',a:'237',hint:'Borrow chain: 500 becomes 4,9,10',type:'input'},
+    ],
+  },
+
+  addition: {
+    easy:[
+      {q:'5 + 3 = ?',a:'8',hint:'Count up 3 from 5',mc:['6','7','8','9'],type:'mc'},
+      {q:'4 + 4 = ?',a:'8',hint:'Double 4',mc:['6','7','8','9'],type:'mc'},
+      {q:'2 + 6 = ?',a:'8',hint:'Start at 6 and count up 2',mc:['7','8','9','10'],type:'mc'},
+      {q:'7 + 3 = ?',a:'10',hint:'7 and 3 make a ten',mc:['9','10','11','12'],type:'mc'},
+      {q:'1 + 9 = ?',a:'10',hint:'1 and 9 make a ten',mc:['8','9','10','11'],type:'mc'},
+      {q:'6 + 5 = ?',a:'11',hint:'6 + 5: think 6+4=10, then +1',mc:['10','11','12','13'],type:'mc'},
+      {q:'3 + 8 = ?',a:'11',hint:'8 + 3: think 8+2=10, then +1',mc:['10','11','12','13'],type:'mc'},
+      {q:'9 + 4 = ?',a:'13',hint:'9+1=10, then +3 more',mc:['12','13','14','15'],type:'mc'},
+      {q:'7 + 6 = ?',a:'13',hint:'7+3=10, then +3 more',mc:['12','13','14','15'],type:'mc'},
+      {q:'8 + 8 = ?',a:'16',hint:'Double 8',mc:['14','15','16','17'],type:'mc'},
+      {q:'5 + 7 = ?',a:'12',hint:'5+5=10, then +2 more',mc:['11','12','13','14'],type:'mc'},
+      {q:'9 + 9 = ?',a:'18',hint:'Double 9',mc:['16','17','18','19'],type:'mc'},
+    ],
+    medium:[
+      {q:'14 + 25 = ?',a:'39',hint:'Add tens: 10+20=30, then ones: 4+5=9',type:'input'},
+      {q:'37 + 46 = ?',a:'83',hint:'Add ones first: 7+6=13, carry the 1',type:'input'},
+      {q:'52 + 39 = ?',a:'91',hint:'50+30=80, 2+9=11, carry: 91',type:'input'},
+      {q:'63 + 28 = ?',a:'91',hint:'60+20=80, 3+8=11, total=91',type:'input'},
+      {q:'45 + 55 = ?',a:'100',hint:'40+50=90, 5+5=10, total=100',type:'input'},
+      {q:'76 + 18 = ?',a:'94',hint:'70+10=80, 6+8=14, total=94',type:'input'},
+      {q:'29 + 43 = ?',a:'72',hint:'20+40=60, 9+3=12, total=72',type:'input'},
+      {q:'57 + 35 = ?',a:'92',hint:'50+30=80, 7+5=12, total=92',type:'input'},
+      {q:'48 + 44 = ?',a:'92',hint:'40+40=80, 8+4=12, total=92',type:'input'},
+      {q:'66 + 27 = ?',a:'93',hint:'60+20=80, 6+7=13, total=93',type:'input'},
+    ],
+    hard:[
+      {q:'138 + 254 = ?',a:'392',hint:'Add ones: 8+4=12, carry 1. Tens: 3+5+1=9. Hundreds: 1+2=3',type:'input'},
+      {q:'467 + 285 = ?',a:'752',hint:'Ones: 7+5=12 carry 1. Tens: 6+8+1=15 carry 1. Hundreds: 4+2+1=7',type:'input'},
+      {q:'374 + 459 = ?',a:'833',hint:'Ones: 4+9=13. Tens: 7+5+1=13. Hundreds: 3+4+1=8',type:'input'},
+      {q:'529 + 364 = ?',a:'893',hint:'Ones: 9+4=13. Tens: 2+6+1=9. Hundreds: 5+3=8',type:'input'},
+      {q:'648 + 275 = ?',a:'923',hint:'Ones: 8+5=13. Tens: 4+7+1=12. Hundreds: 6+2+1=9',type:'input'},
+      {q:'783 + 149 = ?',a:'932',hint:'Ones: 3+9=12. Tens: 8+4+1=13. Hundreds: 7+1+1=9',type:'input'},
+      {q:'256 + 487 = ?',a:'743',hint:'Ones: 6+7=13. Tens: 5+8+1=14. Hundreds: 2+4+1=7',type:'input'},
+      {q:'395 + 418 = ?',a:'813',hint:'Ones: 5+8=13. Tens: 9+1+1=11. Hundreds: 3+4+1=8',type:'input'},
+    ],
+    challenge:[
+      {q:'A store sold 348 apples Monday and 267 Tuesday. How many total?',a:'615',hint:'348 + 267: ones 8+7=15, carry 1, tens 4+6+1=11',type:'input'},
+      {q:'What is 1,245 + 2,378?',a:'3623',hint:'Work column by column right to left',type:'input'},
+      {q:'A school has 456 boys and 389 girls. How many students total?',a:'845',hint:'456 + 389: ones 6+9=15, carry 1',type:'input'},
+      {q:'What is 999 + 876?',a:'1875',hint:'9+6=15, 9+7+1=17, 9+8+1=18, carry to thousands',type:'input'},
+      {q:'Two towns have 2,456 and 1,789 people. Total population?',a:'4245',hint:'Add thousands, hundreds, tens, ones with carrying',type:'input'},
+    ],
+  },
+
+  subtraction: {
+    easy:[
+      {q:'9 - 4 = ?',a:'5',hint:'Count back 4 from 9',mc:['3','4','5','6'],type:'mc'},
+      {q:'7 - 3 = ?',a:'4',hint:'Start at 7, count back 3',mc:['3','4','5','6'],type:'mc'},
+      {q:'10 - 6 = ?',a:'4',hint:'10 take away 6',mc:['3','4','5','6'],type:'mc'},
+      {q:'8 - 5 = ?',a:'3',hint:'8 minus 5',mc:['2','3','4','5'],type:'mc'},
+      {q:'12 - 7 = ?',a:'5',hint:'12 take away 7',mc:['4','5','6','7'],type:'mc'},
+      {q:'15 - 8 = ?',a:'7',hint:'15 minus 8',mc:['6','7','8','9'],type:'mc'},
+      {q:'11 - 4 = ?',a:'7',hint:'11 take away 4',mc:['6','7','8','9'],type:'mc'},
+      {q:'14 - 9 = ?',a:'5',hint:'14 minus 9',mc:['4','5','6','7'],type:'mc'},
+      {q:'16 - 7 = ?',a:'9',hint:'16 take away 7',mc:['8','9','10','11'],type:'mc'},
+      {q:'13 - 5 = ?',a:'8',hint:'13 minus 5',mc:['7','8','9','10'],type:'mc'},
+    ],
+    medium:[
+      {q:'52 - 18 = ?',a:'34',hint:'52 - 20 = 32, then add 2 back = 34',type:'input'},
+      {q:'74 - 36 = ?',a:'38',hint:'Borrow from tens: 14-6=8, 6-3=3 → 38',type:'input'},
+      {q:'83 - 47 = ?',a:'36',hint:'Borrow: 13-7=6, 7-4=3',type:'input'},
+      {q:'91 - 54 = ?',a:'37',hint:'Borrow: 11-4=7, 8-5=3',type:'input'},
+      {q:'65 - 29 = ?',a:'36',hint:'Borrow: 15-9=6, 5-2=3',type:'input'},
+      {q:'80 - 43 = ?',a:'37',hint:'Borrow from tens: 10-3=7, 7-4=3',type:'input'},
+      {q:'72 - 35 = ?',a:'37',hint:'Borrow: 12-5=7, 6-3=3',type:'input'},
+      {q:'56 - 28 = ?',a:'28',hint:'Borrow: 16-8=8, 4-2=2',type:'input'},
+      {q:'94 - 67 = ?',a:'27',hint:'Borrow: 14-7=7, 8-6=2',type:'input'},
+      {q:'61 - 38 = ?',a:'23',hint:'Borrow: 11-8=3, 5-3=2',type:'input'},
+    ],
+    hard:[
+      {q:'305 - 148 = ?',a:'157',hint:'Borrow: 15-8=7, 9-4=5, 2-1=1',type:'input'},
+      {q:'402 - 267 = ?',a:'135',hint:'Borrow chain from hundreds',type:'input'},
+      {q:'600 - 345 = ?',a:'255',hint:'600 becomes 5,9,10 when borrowing',type:'input'},
+      {q:'503 - 278 = ?',a:'225',hint:'Borrow chain: 13-8=5, 9-7=2, 4-2=2',type:'input'},
+      {q:'700 - 456 = ?',a:'244',hint:'700 becomes 6,9,10',type:'input'},
+      {q:'801 - 364 = ?',a:'437',hint:'Borrow: 11-4=7, 9-6=3, 7-3=4',type:'input'},
+      {q:'900 - 537 = ?',a:'363',hint:'900 becomes 8,9,10',type:'input'},
+      {q:'604 - 289 = ?',a:'315',hint:'Borrow: 14-9=5, 9-8=1, 5-2=3',type:'input'},
+    ],
+    challenge:[
+      {q:'A train travels 500 km. It has covered 237 km. How many km remain?',a:'263',hint:'500 - 237: borrow from hundreds',type:'input'},
+      {q:'A factory made 1,000 parts. 648 were shipped. How many remain?',a:'352',hint:'1000 - 648: borrow chain',type:'input'},
+      {q:'What is 2,005 - 1,348?',a:'657',hint:'Borrow across zeros',type:'input'},
+      {q:'A rope is 8,000 cm long. 3,456 cm is cut off. How much remains?',a:'4544',hint:'8000 - 3456',type:'input'},
+    ],
+  },
+
+  shapes: {
+    easy:[
+      {q:'How many sides does a triangle have?',a:'3',hint:'Tri means three!',mc:['2','3','4','5'],type:'mc'},
+      {q:'How many corners does a square have?',a:'4',hint:'Count each pointy corner',mc:['3','4','5','6'],type:'mc'},
+      {q:'What shape has no corners?',a:'circle',hint:'It is perfectly round',mc:['square','triangle','circle','rectangle'],type:'mc'},
+      {q:'How many sides does a pentagon have?',a:'5',hint:'Penta means five',mc:['4','5','6','7'],type:'mc'},
+      {q:'What do you call a 6-sided shape?',a:'hexagon',hint:'Hex means six',mc:['pentagon','hexagon','octagon','heptagon'],type:'mc'},
+      {q:'How many sides does an octagon have?',a:'8',hint:'Oct means eight (like October)',mc:['6','7','8','9'],type:'mc'},
+      {q:'A rectangle has how many sides?',a:'4',hint:'Like a square but stretched',mc:['3','4','5','6'],type:'mc'},
+      {q:'Which shape looks like a ball?',a:'sphere',hint:'3D version of a circle',mc:['cube','cone','sphere','cylinder'],type:'mc'},
+      {q:'How many faces does a cube have?',a:'6',hint:'Think of a dice!',mc:['4','5','6','8'],type:'mc'},
+      {q:'What is the shape of a stop sign?',a:'octagon',hint:'Count its sides: 8',mc:['hexagon','octagon','pentagon','heptagon'],type:'mc'},
+      {q:'Which 3D shape has a point at the top?',a:'cone',hint:'Like an ice cream!',mc:['cube','cylinder','cone','sphere'],type:'mc'},
+      {q:'How many sides does a rhombus have?',a:'4',hint:'It is like a tilted square',mc:['3','4','5','6'],type:'mc'},
+    ],
+    medium:[
+      {q:'A rectangle is 5 cm long and 3 cm wide. What is the perimeter?',a:'16',hint:'Add all sides: 5+3+5+3',type:'input'},
+      {q:'What is the area of a square with side 6 cm?',a:'36',hint:'Area = side × side = 6 × 6',type:'input'},
+      {q:'A triangle has sides 4, 6, and 8 cm. What is the perimeter?',a:'18',hint:'Add all three sides',type:'input'},
+      {q:'What is the area of a rectangle 7 cm × 4 cm?',a:'28',hint:'Area = length × width',type:'input'},
+      {q:'A square has perimeter 24 cm. What is one side?',a:'6',hint:'Divide perimeter by 4 sides',type:'input'},
+      {q:'A rectangle has area 30 cm² and width 5 cm. What is the length?',a:'6',hint:'Length = Area ÷ Width = 30 ÷ 5',type:'input'},
+      {q:'What is the perimeter of a regular hexagon with side 4 cm?',a:'24',hint:'6 equal sides × 4',type:'input'},
+      {q:'A square has area 49 cm². What is its perimeter?',a:'28',hint:'Side = √49 = 7, Perimeter = 4×7',type:'input'},
+      {q:'What is the area of a rectangle 9 cm × 5 cm?',a:'45',hint:'9 × 5 = 45',type:'input'},
+      {q:'A triangle has base 10 cm and height 4 cm. What is the area?',a:'20',hint:'Area = (base × height) ÷ 2',type:'input'},
+    ],
+    hard:[
+      {q:'A circle has radius 7 cm. What is its area? (Use π ≈ 3.14)',a:'153.86',hint:'Area = π × r² = 3.14 × 49',type:'input'},
+      {q:'A circle has diameter 10 cm. What is its circumference? (π ≈ 3.14)',a:'31.4',hint:'C = π × d = 3.14 × 10',type:'input'},
+      {q:'A trapezoid has parallel sides of 8 cm and 12 cm, height 5 cm. What is the area?',a:'50',hint:'Area = (a+b)/2 × h = (8+12)/2 × 5',type:'input'},
+      {q:'A rectangle has diagonal 13 cm and one side 5 cm. What is the other side?',a:'12',hint:'Use Pythagoras: 13² = 5² + side², 169-25=144, √144=12',type:'input'},
+      {q:'Find the area of a triangle: base 14 cm, height 9 cm.',a:'63',hint:'Area = (14 × 9) ÷ 2 = 63',type:'input'},
+      {q:'A circle has radius 5 cm. What is its circumference? (π ≈ 3.14)',a:'31.4',hint:'C = 2 × π × r = 2 × 3.14 × 5',type:'input'},
+    ],
+    challenge:[
+      {q:'A rectangular room is 6.5 m × 4.2 m. What is the area of the floor?',a:'27.3',hint:'6.5 × 4.2 = 27.3 m²',type:'input'},
+      {q:'A circle has area 78.5 cm². What is the radius? (π ≈ 3.14)',a:'5',hint:'r² = Area ÷ π = 78.5 ÷ 3.14 = 25, r = 5',type:'input'},
+      {q:'A composite shape is a rectangle 10×6 with a triangle on top, base 10 height 4. Total area?',a:'80',hint:'Rectangle: 60, Triangle: (10×4)/2=20, Total: 80',type:'input'},
+    ],
+  },
+
+  multiplication: {
+    easy:[
+      {q:'3 × 4 = ?',a:'12',hint:'3 groups of 4: 4+4+4',mc:['10','11','12','13'],type:'mc'},
+      {q:'5 × 5 = ?',a:'25',hint:'5 fives! Count by 5s',mc:['20','25','30','35'],type:'mc'},
+      {q:'2 × 8 = ?',a:'16',hint:'Double 8',mc:['14','15','16','17'],type:'mc'},
+      {q:'6 × 3 = ?',a:'18',hint:'6 groups of 3',mc:['15','16','17','18'],type:'mc'},
+      {q:'4 × 5 = ?',a:'20',hint:'Count by 5s four times',mc:['18','19','20','21'],type:'mc'},
+      {q:'7 × 2 = ?',a:'14',hint:'Double 7',mc:['12','13','14','15'],type:'mc'},
+      {q:'9 × 2 = ?',a:'18',hint:'Double 9',mc:['16','17','18','19'],type:'mc'},
+      {q:'3 × 3 = ?',a:'9',hint:'3 squared',mc:['6','7','8','9'],type:'mc'},
+      {q:'4 × 4 = ?',a:'16',hint:'4 squared',mc:['14','15','16','17'],type:'mc'},
+      {q:'6 × 5 = ?',a:'30',hint:'Count by 6s five times, or 5s six times',mc:['25','28','30','32'],type:'mc'},
+      {q:'8 × 3 = ?',a:'24',hint:'8+8+8',mc:['22','23','24','25'],type:'mc'},
+      {q:'7 × 5 = ?',a:'35',hint:'Count by 5s seven times',mc:['30','33','35','38'],type:'mc'},
+    ],
+    medium:[
+      {q:'7 × 6 = ?',a:'42',hint:'Think 7×5=35, then add 7 more',type:'input'},
+      {q:'8 × 9 = ?',a:'72',hint:'Think 8×10=80, subtract 8',type:'input'},
+      {q:'12 × 4 = ?',a:'48',hint:'10×4=40, then 2×4=8, add them',type:'input'},
+      {q:'9 × 6 = ?',a:'54',hint:'9×5=45, add 9 more',type:'input'},
+      {q:'11 × 7 = ?',a:'77',hint:'10×7=70, add 7 more',type:'input'},
+      {q:'8 × 7 = ?',a:'56',hint:'8×5=40, 8×2=16, add: 56',type:'input'},
+      {q:'12 × 6 = ?',a:'72',hint:'10×6=60, 2×6=12, add: 72',type:'input'},
+      {q:'9 × 8 = ?',a:'72',hint:'9×10=90, subtract 9×2=18: 90-18=72',type:'input'},
+      {q:'11 × 11 = ?',a:'121',hint:'10×11=110, add 11 more',type:'input'},
+      {q:'7 × 8 = ?',a:'56',hint:'7×8: think 7×7=49, add 7',type:'input'},
+    ],
+    hard:[
+      {q:'23 × 7 = ?',a:'161',hint:'20×7=140, 3×7=21, add: 161',type:'input'},
+      {q:'45 × 8 = ?',a:'360',hint:'40×8=320, 5×8=40, add: 360',type:'input'},
+      {q:'36 × 9 = ?',a:'324',hint:'30×9=270, 6×9=54, add: 324',type:'input'},
+      {q:'54 × 6 = ?',a:'324',hint:'50×6=300, 4×6=24, add: 324',type:'input'},
+      {q:'27 × 8 = ?',a:'216',hint:'20×8=160, 7×8=56, add: 216',type:'input'},
+      {q:'43 × 7 = ?',a:'301',hint:'40×7=280, 3×7=21, add: 301',type:'input'},
+      {q:'68 × 5 = ?',a:'340',hint:'60×5=300, 8×5=40, add: 340',type:'input'},
+      {q:'72 × 4 = ?',a:'288',hint:'70×4=280, 2×4=8, add: 288',type:'input'},
+    ],
+    challenge:[
+      {q:'A class has 24 students. Each student needs 7 pencils. How many pencils total?',a:'168',hint:'24 × 7 = (20×7) + (4×7) = 140+28',type:'input'},
+      {q:'What is 34 × 25?',a:'850',hint:'34×25: think 34×100÷4 = 3400÷4',type:'input'},
+      {q:'A box holds 48 chocolates. How many chocolates in 12 boxes?',a:'576',hint:'48 × 12 = 48×10 + 48×2 = 480+96',type:'input'},
+      {q:'What is 125 × 8?',a:'1000',hint:'125 × 8 = 1000 (useful to memorise!)',type:'input'},
+      {q:'56 × 35 = ?',a:'1960',hint:'56×30=1680, 56×5=280, add: 1960',type:'input'},
+    ],
+  },
+
+  division: {
+    easy:[
+      {q:'12 ÷ 4 = ?',a:'3',hint:'How many groups of 4 fit in 12?',mc:['2','3','4','5'],type:'mc'},
+      {q:'20 ÷ 5 = ?',a:'4',hint:'Count by 5s to reach 20',mc:['3','4','5','6'],type:'mc'},
+      {q:'16 ÷ 4 = ?',a:'4',hint:'4×4 = 16',mc:['3','4','5','6'],type:'mc'},
+      {q:'18 ÷ 3 = ?',a:'6',hint:'3×6 = 18',mc:['5','6','7','8'],type:'mc'},
+      {q:'15 ÷ 5 = ?',a:'3',hint:'Count by 5s: 5,10,15 — that\'s 3 steps',mc:['2','3','4','5'],type:'mc'},
+      {q:'24 ÷ 6 = ?',a:'4',hint:'6×4 = 24',mc:['3','4','5','6'],type:'mc'},
+      {q:'10 ÷ 2 = ?',a:'5',hint:'2×5 = 10',mc:['4','5','6','7'],type:'mc'},
+      {q:'21 ÷ 7 = ?',a:'3',hint:'7×3 = 21',mc:['2','3','4','5'],type:'mc'},
+      {q:'36 ÷ 9 = ?',a:'4',hint:'9×4 = 36',mc:['3','4','5','6'],type:'mc'},
+      {q:'28 ÷ 4 = ?',a:'7',hint:'4×7 = 28',mc:['5','6','7','8'],type:'mc'},
+      {q:'30 ÷ 6 = ?',a:'5',hint:'6×5 = 30',mc:['4','5','6','7'],type:'mc'},
+      {q:'42 ÷ 7 = ?',a:'6',hint:'7×6 = 42',mc:['5','6','7','8'],type:'mc'},
+    ],
+    medium:[
+      {q:'48 ÷ 6 = ?',a:'8',hint:'Think: 6 × ? = 48',type:'input'},
+      {q:'63 ÷ 9 = ?',a:'7',hint:'Think: 9 × ? = 63',type:'input'},
+      {q:'72 ÷ 8 = ?',a:'9',hint:'Think: 8 × ? = 72',type:'input'},
+      {q:'56 ÷ 7 = ?',a:'8',hint:'7 × 8 = 56',type:'input'},
+      {q:'81 ÷ 9 = ?',a:'9',hint:'9 squared = 81',type:'input'},
+      {q:'64 ÷ 8 = ?',a:'8',hint:'8 squared = 64',type:'input'},
+      {q:'96 ÷ 8 = ?',a:'12',hint:'80÷8=10, 16÷8=2, total=12',type:'input'},
+      {q:'84 ÷ 7 = ?',a:'12',hint:'70÷7=10, 14÷7=2, total=12',type:'input'},
+      {q:'108 ÷ 9 = ?',a:'12',hint:'90÷9=10, 18÷9=2, total=12',type:'input'},
+      {q:'110 ÷ 11 = ?',a:'10',hint:'11×10=110',type:'input'},
+    ],
+    hard:[
+      {q:'144 ÷ 12 = ?',a:'12',hint:'12 × 12 = 144',type:'input'},
+      {q:'135 ÷ 5 = ?',a:'27',hint:'100÷5=20, 35÷5=7, total=27',type:'input'},
+      {q:'168 ÷ 8 = ?',a:'21',hint:'160÷8=20, 8÷8=1, total=21',type:'input'},
+      {q:'252 ÷ 9 = ?',a:'28',hint:'180÷9=20, 72÷9=8, total=28',type:'input'},
+      {q:'336 ÷ 7 = ?',a:'48',hint:'280÷7=40, 56÷7=8, total=48',type:'input'},
+      {q:'225 ÷ 15 = ?',a:'15',hint:'15 × 15 = 225',type:'input'},
+      {q:'288 ÷ 12 = ?',a:'24',hint:'240÷12=20, 48÷12=4, total=24',type:'input'},
+      {q:'196 ÷ 14 = ?',a:'14',hint:'14 × 14 = 196',type:'input'},
+    ],
+    challenge:[
+      {q:'A school has 252 students divided into 9 equal classes. How many per class?',a:'28',hint:'252 ÷ 9: think 9×28',type:'input'},
+      {q:'576 books are packed in boxes of 24. How many boxes?',a:'24',hint:'576 ÷ 24 = 24',type:'input'},
+      {q:'A factory produces 1,440 items in 12 hours. How many per hour?',a:'120',hint:'1440 ÷ 12 = 120',type:'input'},
+      {q:'1,764 ÷ 42 = ?',a:'42',hint:'42 × 42 = 1764',type:'input'},
+    ],
+  },
+
+  fractions: {
+    easy:[
+      {q:'What is half of 8?',a:'4',hint:'Divide 8 into 2 equal parts',mc:['2','3','4','5'],type:'mc'},
+      {q:'Which is bigger: 1/2 or 1/4?',a:'1/2',hint:'Smaller bottom number = bigger piece',mc:['1/4','1/2','They are equal','Cannot tell'],type:'mc'},
+      {q:'What fraction is shaded if 1 of 3 parts is shaded?',a:'1/3',hint:'1 shaded out of 3 total',mc:['1/2','1/3','1/4','2/3'],type:'mc'},
+      {q:'What is a quarter of 12?',a:'3',hint:'12 ÷ 4 = 3',mc:['2','3','4','6'],type:'mc'},
+      {q:'2/4 is the same as which fraction?',a:'1/2',hint:'Divide top and bottom by 2',mc:['1/3','1/2','2/3','3/4'],type:'mc'},
+      {q:'What is 3/3?',a:'1',hint:'When numerator equals denominator, it equals 1',mc:['0','1/3','2/3','1'],type:'mc'},
+      {q:'Which is smallest: 1/2, 1/3, or 1/4?',a:'1/4',hint:'Bigger bottom number = smaller fraction',mc:['1/2','1/3','1/4','all equal'],type:'mc'},
+      {q:'What fraction of a dozen (12) is 6?',a:'1/2',hint:'6 out of 12 = 6/12 = 1/2',mc:['1/3','1/4','1/2','2/3'],type:'mc'},
+      {q:'What is 0/5?',a:'0',hint:'Zero parts of anything is still zero',mc:['0','1','5','undefined'],type:'mc'},
+      {q:'What is 2/2?',a:'1',hint:'All parts of a whole = 1',mc:['0','1/2','1','2'],type:'mc'},
+    ],
+    medium:[
+      {q:'1/2 + 1/4 = ?',a:'3/4',hint:'Convert: 2/4 + 1/4 = 3/4',type:'input'},
+      {q:'3/4 - 1/4 = ?',a:'2/4',hint:'Subtract numerators, keep denominator',type:'input'},
+      {q:'What is 2/3 of 12?',a:'8',hint:'12 ÷ 3 = 4, then × 2 = 8',type:'input'},
+      {q:'1/3 + 1/3 = ?',a:'2/3',hint:'Add numerators when denominators are same',type:'input'},
+      {q:'5/6 - 1/6 = ?',a:'4/6',hint:'5 - 1 = 4, keep the /6',type:'input'},
+      {q:'What is 3/4 of 20?',a:'15',hint:'20 ÷ 4 = 5, then × 3 = 15',type:'input'},
+      {q:'1/2 + 1/6 = ?',a:'4/6',hint:'Convert 1/2 to 3/6, then 3/6+1/6=4/6',type:'input'},
+      {q:'What is 2/5 of 25?',a:'10',hint:'25 ÷ 5 = 5, then × 2 = 10',type:'input'},
+      {q:'3/8 + 1/8 = ?',a:'4/8',hint:'Add numerators: 3+1=4, keep /8',type:'input'},
+      {q:'7/10 - 3/10 = ?',a:'4/10',hint:'7-3=4, keep /10',type:'input'},
+    ],
+    hard:[
+      {q:'3/8 + 5/12 = ?',a:'19/24',hint:'LCD is 24: 9/24 + 10/24 = 19/24',type:'input'},
+      {q:'2 1/3 + 1 1/2 = ?',a:'3 5/6',hint:'2+1=3, 1/3+1/2=2/6+3/6=5/6',type:'input'},
+      {q:'5/6 - 3/4 = ?',a:'1/12',hint:'LCD=12: 10/12 - 9/12 = 1/12',type:'input'},
+      {q:'3/4 × 8 = ?',a:'6',hint:'(3×8)÷4 = 24÷4 = 6',type:'input'},
+      {q:'2/3 ÷ 4 = ?',a:'1/6',hint:'Dividing by 4 = multiplying by 1/4: 2/3 × 1/4 = 2/12 = 1/6',type:'input'},
+      {q:'1 3/4 + 2 1/2 = ?',a:'4 1/4',hint:'1+2=3, 3/4+1/2=3/4+2/4=5/4=1 1/4, total=4 1/4',type:'input'},
+      {q:'4/5 × 15 = ?',a:'12',hint:'15 ÷ 5 = 3, then × 4 = 12',type:'input'},
+      {q:'3 1/2 - 1 3/4 = ?',a:'1 3/4',hint:'Convert: 7/2 - 7/4 = 14/4 - 7/4 = 7/4 = 1 3/4',type:'input'},
+    ],
+    challenge:[
+      {q:'A pizza has 8 slices. Tom eats 3, Anna eats 2. What fraction is left?',a:'3/8',hint:'5 eaten, 3 remain out of 8',type:'input'},
+      {q:'(2/3) ÷ (4/9) = ?',a:'3/2',hint:'Multiply by reciprocal: 2/3 × 9/4 = 18/12 = 3/2',type:'input'},
+      {q:'A recipe needs 2 1/4 cups of flour. You triple it. How much flour?',a:'6 3/4',hint:'2 1/4 × 3 = 9/4 × 3 = 27/4 = 6 3/4',type:'input'},
+      {q:'Which is larger: 7/12 or 5/9?',a:'7/12',hint:'LCD=36: 21/36 vs 20/36',type:'input'},
+    ],
+  },
+
+  decimals: {
+    easy:[
+      {q:'0.5 is the same as which fraction?',a:'1/2',hint:'0.5 means 5 tenths = 1/2',mc:['1/4','1/2','1/3','3/4'],type:'mc'},
+      {q:'What is 0.3 + 0.4?',a:'0.7',hint:'3 tenths plus 4 tenths',mc:['0.6','0.7','0.8','0.12'],type:'mc'},
+      {q:'What is 0.25 as a fraction?',a:'1/4',hint:'25 hundredths = 1/4',mc:['1/5','1/4','1/3','1/2'],type:'mc'},
+      {q:'Which is larger: 0.6 or 0.59?',a:'0.6',hint:'0.60 vs 0.59 — compare tenths first',mc:['0.6','0.59','They are equal','Cannot tell'],type:'mc'},
+      {q:'What is 1.5 + 0.5?',a:'2',hint:'1 and 5 tenths plus 5 tenths = 2',mc:['1.5','2','2.5','3'],type:'mc'},
+      {q:'What is 0.9 + 0.1?',a:'1',hint:'9 tenths + 1 tenth = 10 tenths = 1',mc:['0.9','1','1.1','1.9'],type:'mc'},
+      {q:'What is 2.5 - 1.0?',a:'1.5',hint:'2.5 take away 1',mc:['1.5','1.0','2.0','2.5'],type:'mc'},
+      {q:'0.75 is the same as which fraction?',a:'3/4',hint:'75 hundredths = 75/100 = 3/4',mc:['1/2','2/3','3/4','4/5'],type:'mc'},
+      {q:'What is 3.0 - 0.5?',a:'2.5',hint:'3 minus a half',mc:['2.0','2.5','3.5','4.0'],type:'mc'},
+      {q:'What decimal is equal to 1/5?',a:'0.2',hint:'1 ÷ 5 = 0.2',mc:['0.1','0.2','0.5','0.15'],type:'mc'},
+    ],
+    medium:[
+      {q:'3.7 + 2.8 = ?',a:'6.5',hint:'Add like whole numbers, keep the decimal',type:'input'},
+      {q:'5.2 - 1.8 = ?',a:'3.4',hint:'Borrow: 12-8=4 in tenths, 4-1=3 in ones',type:'input'},
+      {q:'4.5 + 3.7 = ?',a:'8.2',hint:'4+3=7, 0.5+0.7=1.2, total=8.2',type:'input'},
+      {q:'9.1 - 4.6 = ?',a:'4.5',hint:'Borrow: 11-6=5, 8-4=4',type:'input'},
+      {q:'6.3 + 5.9 = ?',a:'12.2',hint:'6+5=11, 0.3+0.9=1.2, total=12.2',type:'input'},
+      {q:'7.0 - 2.4 = ?',a:'4.6',hint:'Borrow: 10-4=6, 6-2=4',type:'input'},
+      {q:'2.45 + 3.6 = ?',a:'6.05',hint:'Align decimals: 2.45 + 3.60',type:'input'},
+      {q:'8.2 - 3.75 = ?',a:'4.45',hint:'8.20 - 3.75: borrow carefully',type:'input'},
+      {q:'1.25 + 4.75 = ?',a:'6',hint:'1.25 + 4.75 = 6.00',type:'input'},
+      {q:'10.5 - 6.8 = ?',a:'3.7',hint:'Borrow: 15-8=7, 9-6=3',type:'input'},
+    ],
+    hard:[
+      {q:'4.25 × 3 = ?',a:'12.75',hint:'425 × 3 = 1275, then place decimal: 12.75',type:'input'},
+      {q:'7.2 ÷ 4 = ?',a:'1.8',hint:'72 ÷ 4 = 18, then place decimal',type:'input'},
+      {q:'3.6 × 5 = ?',a:'18',hint:'36 × 5 = 180, place decimal: 18.0',type:'input'},
+      {q:'9.6 ÷ 8 = ?',a:'1.2',hint:'96 ÷ 8 = 12, place decimal: 1.2',type:'input'},
+      {q:'2.45 × 4 = ?',a:'9.8',hint:'245 × 4 = 980, place decimal: 9.80',type:'input'},
+      {q:'15.6 ÷ 6 = ?',a:'2.6',hint:'156 ÷ 6 = 26, place decimal: 2.6',type:'input'},
+      {q:'6.75 × 8 = ?',a:'54',hint:'675 × 8 = 5400, place decimal: 54.00',type:'input'},
+      {q:'12.4 ÷ 5 = ?',a:'2.48',hint:'124 ÷ 5 = 24.8 ... wait: 124÷5=24 r4, so 2.48',type:'input'},
+    ],
+    challenge:[
+      {q:'A bag of rice weighs 2.75 kg. You use 1.4 kg. How much is left?',a:'1.35',hint:'2.75 - 1.40',type:'input'},
+      {q:'Petrol costs $1.47 per litre. How much for 8 litres?',a:'11.76',hint:'1.47 × 8 = 11.76',type:'input'},
+      {q:'A piece of rope 12.5 m is cut into 5 equal pieces. How long each?',a:'2.5',hint:'12.5 ÷ 5 = 2.5',type:'input'},
+      {q:'3 friends share a bill of $47.25 equally. How much each?',a:'15.75',hint:'47.25 ÷ 3 = 15.75',type:'input'},
+    ],
+  },
+
+  geometry: {
+    easy:[
+      {q:'What is the perimeter of a square with side 5 cm?',a:'20',hint:'4 × 5 = 20',mc:['15','20','25','30'],type:'mc'},
+      {q:'What is the area of a rectangle 4 cm × 3 cm?',a:'12',hint:'Area = length × width',mc:['7','10','12','14'],type:'mc'},
+      {q:'A triangle has angles 60°, 60°, and ___°',a:'60',hint:'Angles in a triangle add to 180°',mc:['30','60','90','120'],type:'mc'},
+      {q:'What is the perimeter of a rectangle 6 cm × 4 cm?',a:'20',hint:'2×(6+4) = 20',mc:['24','20','10','18'],type:'mc'},
+      {q:'Area of a square with side 8 cm?',a:'64',hint:'8 × 8 = 64',mc:['32','48','64','72'],type:'mc'},
+      {q:'A right angle is how many degrees?',a:'90',hint:'A corner of a square',mc:['45','90','180','360'],type:'mc'},
+      {q:'What is the perimeter of a regular triangle with side 7 cm?',a:'21',hint:'3 × 7 = 21',mc:['14','21','28','35'],type:'mc'},
+      {q:'How many degrees in a straight line?',a:'180',hint:'Half of a full rotation',mc:['90','180','270','360'],type:'mc'},
+    ],
+    medium:[
+      {q:'A triangle has sides 5, 7, and 9 cm. What is the perimeter?',a:'21',hint:'Add all three sides',type:'input'},
+      {q:'What is the area of a triangle with base 8 cm and height 5 cm?',a:'20',hint:'Area = (base × height) ÷ 2',type:'input'},
+      {q:'A rectangle has area 48 cm². Its length is 8 cm. What is the width?',a:'6',hint:'Width = Area ÷ Length = 48 ÷ 8',type:'input'},
+      {q:'What is the area of a parallelogram with base 10 cm and height 7 cm?',a:'70',hint:'Area = base × height',type:'input'},
+      {q:'Find the missing angle in a triangle: 75°, 45°, ___°',a:'60',hint:'180 - 75 - 45 = 60',type:'input'},
+      {q:'A square field has area 144 m². What is the length of one side?',a:'12',hint:'√144 = 12',type:'input'},
+      {q:'What is the area of a triangle with base 12 and height 8?',a:'48',hint:'(12 × 8) ÷ 2 = 48',type:'input'},
+      {q:'A rectangle has perimeter 30 cm and length 9 cm. What is the width?',a:'6',hint:'2(9 + w) = 30, so 9 + w = 15',type:'input'},
+      {q:'Find the missing angle: 120°, 30°, ___°',a:'30',hint:'180 - 120 - 30 = 30',type:'input'},
+      {q:'Perimeter of a regular pentagon with side 9 cm?',a:'45',hint:'5 × 9 = 45',type:'input'},
+    ],
+    hard:[
+      {q:'A circle has radius 7 cm. Area? (π ≈ 3.14)',a:'153.86',hint:'π × r² = 3.14 × 49',type:'input'},
+      {q:'Circle with diameter 10 cm. Circumference? (π ≈ 3.14)',a:'31.4',hint:'C = π × d = 3.14 × 10',type:'input'},
+      {q:'Using Pythagoras: legs 6 and 8 cm. Hypotenuse?',a:'10',hint:'√(36+64) = √100 = 10',type:'input'},
+      {q:'A sector has radius 6 and angle 90°. Area? (π≈3.14)',a:'28.26',hint:'(90/360) × π × 36 = 0.25 × 113.04',type:'input'},
+      {q:'Hypotenuse is 13, one leg is 5. Other leg?',a:'12',hint:'√(169-25) = √144 = 12',type:'input'},
+      {q:'Area of a rhombus with diagonals 10 cm and 8 cm?',a:'40',hint:'Area = (d1 × d2) ÷ 2 = (10×8)÷2',type:'input'},
+    ],
+    challenge:[
+      {q:'A rectangular room 6.5 m × 4.2 m. Floor area?',a:'27.3',hint:'6.5 × 4.2',type:'input'},
+      {q:'A circle has area 78.5 cm². What is the radius? (π ≈ 3.14)',a:'5',hint:'r² = 78.5 ÷ 3.14 = 25, r=5',type:'input'},
+      {q:'Rectangle 10×6 with semicircle on the 10cm side. Total area? (π≈3.14)',a:'99.25',hint:'60 + (π×25)/2 = 60+39.25',type:'input'},
+    ],
+  },
+
+  algebra: {
+    easy:[
+      {q:'x + 5 = 10. What is x?',a:'5',hint:'What plus 5 equals 10?',mc:['3','4','5','6'],type:'mc'},
+      {q:'2x = 14. What is x?',a:'7',hint:'Divide both sides by 2',mc:['5','6','7','8'],type:'mc'},
+      {q:'x - 3 = 9. What is x?',a:'12',hint:'Add 3 to both sides',mc:['6','9','12','15'],type:'mc'},
+      {q:'x + 8 = 15. What is x?',a:'7',hint:'Subtract 8 from both sides',mc:['5','6','7','8'],type:'mc'},
+      {q:'3x = 21. What is x?',a:'7',hint:'Divide both sides by 3',mc:['6','7','8','9'],type:'mc'},
+      {q:'x - 6 = 4. What is x?',a:'10',hint:'Add 6 to both sides',mc:['8','9','10','11'],type:'mc'},
+      {q:'4x = 20. What is x?',a:'5',hint:'Divide both sides by 4',mc:['4','5','6','7'],type:'mc'},
+      {q:'x + 11 = 20. What is x?',a:'9',hint:'20 - 11 = ?',mc:['8','9','10','11'],type:'mc'},
+      {q:'5x = 35. What is x?',a:'7',hint:'35 ÷ 5 = ?',mc:['5','6','7','8'],type:'mc'},
+      {q:'x ÷ 4 = 3. What is x?',a:'12',hint:'Multiply both sides by 4',mc:['7','9','12','16'],type:'mc'},
+    ],
+    medium:[
+      {q:'3x + 4 = 19. What is x?',a:'5',hint:'Subtract 4: 3x=15, divide by 3',type:'input'},
+      {q:'2x - 7 = 11. What is x?',a:'9',hint:'Add 7: 2x=18, divide by 2',type:'input'},
+      {q:'5x + 3 = 28. What is x?',a:'5',hint:'Subtract 3: 5x=25, divide by 5',type:'input'},
+      {q:'4x - 8 = 12. What is x?',a:'5',hint:'Add 8: 4x=20, divide by 4',type:'input'},
+      {q:'6x + 1 = 25. What is x?',a:'4',hint:'Subtract 1: 6x=24, divide by 6',type:'input'},
+      {q:'3x - 9 = 15. What is x?',a:'8',hint:'Add 9: 3x=24, divide by 3',type:'input'},
+      {q:'7x + 2 = 30. What is x?',a:'4',hint:'Subtract 2: 7x=28, divide by 7',type:'input'},
+      {q:'2x + 13 = 27. What is x?',a:'7',hint:'Subtract 13: 2x=14, divide by 2',type:'input'},
+      {q:'9x - 3 = 33. What is x?',a:'4',hint:'Add 3: 9x=36, divide by 9',type:'input'},
+      {q:'4x + 7 = 35. What is x?',a:'7',hint:'Subtract 7: 4x=28, divide by 4',type:'input'},
+    ],
+    hard:[
+      {q:'3(x + 2) = 21. What is x?',a:'5',hint:'Divide by 3: x+2=7, subtract 2',type:'input'},
+      {q:'2(3x - 1) = 22. What is x?',a:'4',hint:'6x-2=22, 6x=24, x=4',type:'input'},
+      {q:'5(x - 3) = 20. What is x?',a:'7',hint:'Divide by 5: x-3=4, add 3',type:'input'},
+      {q:'4(2x + 1) = 36. What is x?',a:'4',hint:'8x+4=36, 8x=32, x=4',type:'input'},
+      {q:'2x + 3 = x + 9. What is x?',a:'6',hint:'Subtract x: x+3=9, subtract 3',type:'input'},
+      {q:'5x - 4 = 3x + 8. What is x?',a:'6',hint:'Subtract 3x: 2x-4=8, add 4, divide by 2',type:'input'},
+      {q:'3(x+4) = 2(x+7). What is x?',a:'2',hint:'3x+12=2x+14, subtract 2x, then subtract 12',type:'input'},
+      {q:'7x + 5 = 4x + 20. What is x?',a:'5',hint:'Subtract 4x: 3x+5=20, subtract 5, divide by 3',type:'input'},
+    ],
+    challenge:[
+      {q:'Perimeter of a rectangle is 38 cm. Length is x+3, width is x. What is x?',a:'8',hint:'2(x+3+x)=38, 4x+6=38, 4x=32',type:'input'},
+      {q:'Tom is 3 times older than Sue. In 5 years Tom will be twice Sue\'s age. How old is Sue now?',a:'5',hint:'T=3S, T+5=2(S+5): 3S+5=2S+10, S=5',type:'input'},
+      {q:'Solve: (x+2)/3 = (x-1)/2',a:'7',hint:'Cross multiply: 2(x+2)=3(x-1), 2x+4=3x-3',type:'input'},
+      {q:'The sum of three consecutive integers is 48. What is the smallest?',a:'15',hint:'n+(n+1)+(n+2)=48, 3n+3=48, n=15',type:'input'},
+    ],
+  },
+
+  ratios: {
+    easy:[
+      {q:'In a class of 10, 4 are boys. Ratio of boys to girls?',a:'4:6',hint:'Boys:Girls = 4:(10-4)',mc:['2:3','4:6','3:4','1:2'],type:'mc'},
+      {q:'Simplify the ratio 6:8',a:'3:4',hint:'Divide both by 2',mc:['2:3','3:4','4:6','6:8'],type:'mc'},
+      {q:'Simplify 10:15',a:'2:3',hint:'Divide both by 5',mc:['2:3','3:5','5:7','1:2'],type:'mc'},
+      {q:'What is the ratio of 3 cats to 9 dogs? Simplified.',a:'1:3',hint:'Divide both by 3',mc:['1:3','3:9','2:6','1:4'],type:'mc'},
+      {q:'In ratio 2:5, what is the total number of parts?',a:'7',hint:'Add the parts: 2+5=7',mc:['5','7','10','3'],type:'mc'},
+      {q:'Simplify 20:30',a:'2:3',hint:'Divide both by 10',mc:['2:3','4:6','10:15','20:30'],type:'mc'},
+      {q:'Ratio of vowels to consonants in MATH?',a:'1:3',hint:'1 vowel (A), 3 consonants (M,T,H)',mc:['1:3','3:1','1:4','2:3'],type:'mc'},
+      {q:'Simplify 8:12',a:'2:3',hint:'Divide both by 4',mc:['2:3','4:6','1:2','3:4'],type:'mc'},
+    ],
+    medium:[
+      {q:'Ratio is 2:3 and there are 10 red items. How many blue?',a:'15',hint:'2 parts=10, 1 part=5, 3 parts=15',type:'input'},
+      {q:'Recipe: flour to sugar is 3:1. You use 12 cups flour. How many cups sugar?',a:'4',hint:'3 parts flour=12, 1 part=4',type:'input'},
+      {q:'Ratio of boys to girls is 3:5. There are 24 boys. How many girls?',a:'40',hint:'3 parts=24, 1 part=8, girls=5×8',type:'input'},
+      {q:'Divide 40 in ratio 3:5.',a:'15 and 25',hint:'Total 8 parts, each=5. 3×5=15, 5×5=25',type:'input'},
+      {q:'A map scale is 1:50,000. 3 cm on map = how many km?',a:'1.5',hint:'3 × 50,000 = 150,000 cm = 1.5 km',type:'input'},
+      {q:'Orange juice and water mixed 2:3. Total = 20L. How much juice?',a:'8',hint:'2 parts juice, total 5 parts. 20÷5=4, 2×4=8',type:'input'},
+      {q:'Ratio of red to blue to green is 2:3:5. Total 40 balls. How many green?',a:'20',hint:'Total parts=10, each=4. Green=5×4',type:'input'},
+      {q:'Divide $90 in ratio 2:3:4 between A, B, C. How much does C get?',a:'40',hint:'Total 9 parts, each=$10. C=4×10',type:'input'},
+    ],
+    hard:[
+      {q:'Divide 60 in ratio 2:3. What are the two parts?',a:'24 and 36',hint:'Total parts=5, each=12. 2×12=24, 3×12=36',type:'input'},
+      {q:'If 5 workers build a wall in 8 days, how long for 10 workers?',a:'4',hint:'Inverse ratio: 5×8=10×d, d=4',type:'input'},
+      {q:'Gold to silver ratio is 3:7. Total alloy is 500g. How much gold?',a:'150',hint:'3/(3+7) × 500 = 3/10 × 500 = 150',type:'input'},
+      {q:'A:B=2:3, B:C=4:5. What is A:C?',a:'8:15',hint:'A:B:C = 2×4 : 3×4 : 3×5 = 8:12:15, so A:C=8:15',type:'input'},
+    ],
+    challenge:[
+      {q:'24 adults at a party, ratio adults:children is 3:5. How many children?',a:'40',hint:'3 parts=24, 1 part=8, children=5×8',type:'input'},
+      {q:'Petrol and oil mixed 25:1. Total mixture is 520mL. How much oil?',a:'20',hint:'26 parts total, each=20mL. Oil=1×20',type:'input'},
+      {q:'Speeds of two trains are in ratio 5:7. Faster goes 210 km/h. Slower speed?',a:'150',hint:'5 parts = (5/7)×210 = 150',type:'input'},
+    ],
+  },
+
+  percentages: {
+    easy:[
+      {q:'What is 50% of 80?',a:'40',hint:'50% means half',mc:['30','40','50','60'],type:'mc'},
+      {q:'What is 10% of 150?',a:'15',hint:'Move decimal one place left',mc:['10','15','20','25'],type:'mc'},
+      {q:'What is 100% of 75?',a:'75',hint:'100% means the whole thing',mc:['75','100','150','50'],type:'mc'},
+      {q:'What is 25% of 40?',a:'10',hint:'25% = 1/4, so 40÷4',mc:['8','10','12','15'],type:'mc'},
+      {q:'What is 20% of 50?',a:'10',hint:'20% = 1/5, so 50÷5',mc:['5','8','10','15'],type:'mc'},
+      {q:'What percent is 1/2?',a:'50',hint:'Half = 50%',mc:['25','50','75','100'],type:'mc'},
+      {q:'What percent is 1/4?',a:'25',hint:'A quarter = 25%',mc:['10','20','25','40'],type:'mc'},
+      {q:'What is 10% of 200?',a:'20',hint:'Move decimal point left one place',mc:['15','20','25','30'],type:'mc'},
+      {q:'A $10 item is 50% off. How much do you pay?',a:'5',hint:'50% off means half price',mc:['3','4','5','6'],type:'mc'},
+      {q:'What percent is 3/4?',a:'75',hint:'3 × 25% = 75%',mc:['50','60','70','75'],type:'mc'},
+    ],
+    medium:[
+      {q:'What is 25% of 200?',a:'50',hint:'25% = 1/4, 200÷4=50',type:'input'},
+      {q:'A shirt costs $40 and is 20% off. What is the discount?',a:'8',hint:'20% of 40 = 0.20×40=8',type:'input'},
+      {q:'What is 15% of 60?',a:'9',hint:'10%=6, 5%=3, add=9',type:'input'},
+      {q:'What is 35% of 80?',a:'28',hint:'30%=24, 5%=4, add=28',type:'input'},
+      {q:'Sales tax is 8%. A book costs $25. Total with tax?',a:'27',hint:'Tax=0.08×25=2, total=25+2=27',type:'input'},
+      {q:'What is 60% of 150?',a:'90',hint:'60% × 150 = 0.6 × 150',type:'input'},
+      {q:'A class of 30 students, 40% are girls. How many girls?',a:'12',hint:'40% of 30 = 0.4 × 30',type:'input'},
+      {q:'What is 12% of 50?',a:'6',hint:'10%=5, 2%=1, add=6',type:'input'},
+      {q:'A price of $80 increases by 25%. New price?',a:'100',hint:'25% of 80=20, 80+20=100',type:'input'},
+      {q:'What is 75% of 120?',a:'90',hint:'75% = 3/4, so 120×3÷4',type:'input'},
+    ],
+    hard:[
+      {q:'Price increased from $80 to $100. What is the % increase?',a:'25',hint:'(100-80)/80 × 100 = 25%',type:'input'},
+      {q:'What is 35% of 240?',a:'84',hint:'30%=72, 5%=12, add=84',type:'input'},
+      {q:'A TV costs $680 after a 15% discount. Original price?',a:'800',hint:'85% of original=680, original=680÷0.85',type:'input'},
+      {q:'Price fell from $50 to $35. What is the % decrease?',a:'30',hint:'(50-35)/50 × 100 = 30%',type:'input'},
+      {q:'Population grew from 2,000 to 2,500. % increase?',a:'25',hint:'(500/2000)×100 = 25%',type:'input'},
+      {q:'After a 20% rise, salary is $3,600. Original salary?',a:'3000',hint:'120% = 3600, 1% = 30, 100% = 3000',type:'input'},
+      {q:'What is 7.5% of 400?',a:'30',hint:'7.5% = 7% + 0.5%: 28+2=30',type:'input'},
+      {q:'A laptop for $1,200 is discounted 12.5%. Sale price?',a:'1050',hint:'12.5% of 1200=150, 1200-150=1050',type:'input'},
+    ],
+    challenge:[
+      {q:'After a 15% discount, a TV costs $425. Original price?',a:'500',hint:'85% of original=425, ÷0.85=500',type:'input'},
+      {q:'Price increased 20% then decreased 20%. Net change?',a:'-4%',hint:'1.2 × 0.8 = 0.96, so -4%',type:'input'},
+      {q:'A bacteria population doubles every hour. After 3 hours, % increase?',a:'700',hint:'1→2→4→8, increase=7, 700%',type:'input'},
+      {q:'Score went from 60% to 75%. By what % did it increase?',a:'25',hint:'(75-60)/60 × 100 = 25%',type:'input'},
+    ],
+  },
+
+  statistics: {
+    easy:[
+      {q:'Find the mean of: 2, 4, 6',a:'4',hint:'(2+4+6)÷3=12÷3=4',mc:['3','4','5','6'],type:'mc'},
+      {q:'Find the median of: 3, 5, 7, 9, 11',a:'7',hint:'Middle value when sorted',mc:['5','6','7','9'],type:'mc'},
+      {q:'Find the mode of: 2, 3, 3, 4, 5',a:'3',hint:'Most frequent number',mc:['2','3','4','5'],type:'mc'},
+      {q:'Find the range of: 4, 8, 12, 16',a:'12',hint:'Range = max - min = 16 - 4',mc:['8','10','12','16'],type:'mc'},
+      {q:'Find the mean of: 10, 20, 30',a:'20',hint:'(10+20+30)÷3=60÷3',mc:['15','20','25','30'],type:'mc'},
+      {q:'Which measure shows the middle value?',a:'median',hint:'Median is the middle when sorted',mc:['mean','median','mode','range'],type:'mc'},
+      {q:'Find the mode of: 5, 5, 7, 8, 5',a:'5',hint:'5 appears 3 times',mc:['5','6','7','8'],type:'mc'},
+      {q:'Find the range of: 3, 9, 15, 21',a:'18',hint:'21 - 3 = 18',mc:['9','12','15','18'],type:'mc'},
+    ],
+    medium:[
+      {q:'Find the mean of: 12, 15, 18, 21, 24',a:'18',hint:'Sum=90, count=5, 90÷5=18',type:'input'},
+      {q:'Find the mode of: 3, 5, 3, 7, 3, 8',a:'3',hint:'3 appears most often',type:'input'},
+      {q:'Find the median of: 4, 7, 2, 9, 5',a:'5',hint:'Sort first: 2,4,5,7,9 — middle is 5',type:'input'},
+      {q:'Find the mean of: 8, 12, 6, 14, 10',a:'10',hint:'Sum=50, count=5, 50÷5=10',type:'input'},
+      {q:'Find the range of: 14, 23, 8, 31, 19',a:'23',hint:'31 - 8 = 23',type:'input'},
+      {q:'Find the median of: 11, 4, 8, 15, 7, 12',a:'9.5',hint:'Sort: 4,7,8,11,12,15 — middle is (8+11)/2',type:'input'},
+      {q:'Mean of 5 numbers is 14. Four of them are 10,12,16,18. What is the fifth?',a:'14',hint:'Total=5×14=70, sum of 4=56, fifth=70-56=14',type:'input'},
+      {q:'Find the mean of: 2.5, 3.7, 4.1, 2.9, 1.8',a:'3',hint:'Sum=15, count=5, 15÷5=3',type:'input'},
+    ],
+    hard:[
+      {q:'Find the mean, median and mode of: 4,4,6,8,8,8,10',a:'mean=6.86, median=8, mode=8',hint:'Sum=48, n=7, mean≈6.86; middle=8; most frequent=8',type:'input'},
+      {q:'7 tests, mean score 72. First 6 mean is 70. What is score 7?',a:'84',hint:'Total=7×72=504, first 6 total=420, score7=504-420=84',type:'input'},
+      {q:'Find the weighted mean: score 80 weight 3, score 90 weight 2.',a:'84',hint:'(80×3 + 90×2)÷(3+2) = (240+180)÷5 = 84',type:'input'},
+      {q:'Range of: -5, -1, 0, 3, 7, 12',a:'17',hint:'12 - (-5) = 17',type:'input'},
+      {q:'Add a value to {3,5,7,9} to make the mean = 8.',a:'16',hint:'New mean=8, total=5×8=40, current sum=24, add 16',type:'input'},
+    ],
+    challenge:[
+      {q:'Five scores: 72,85,91,68,84. Mean? Score needed for mean 82 on test 6?',a:'80, 92',hint:'Sum=400, mean=80. Need 492 total for mean 82×6, so 492-400=92',type:'input'},
+      {q:'Median of 100 sorted numbers. Which positions give the median?',a:'50th and 51st',hint:'Even count: average of n/2 and n/2+1 positions',type:'input'},
+    ],
+  },
+
+  integers: {
+    easy:[
+      {q:'-5 + 3 = ?',a:'-2',hint:'Start at -5, move right 3',mc:['-8','-3','-2','2'],type:'mc'},
+      {q:'What is the absolute value of -7?',a:'7',hint:'Distance from zero',mc:['-7','0','7','14'],type:'mc'},
+      {q:'-3 + (-2) = ?',a:'-5',hint:'Both negative: add and keep negative',mc:['-6','-5','-1','5'],type:'mc'},
+      {q:'4 + (-1) = ?',a:'3',hint:'Positive plus small negative',mc:['2','3','4','5'],type:'mc'},
+      {q:'|-12| = ?',a:'12',hint:'Absolute value is always positive',mc:['-12','0','12','144'],type:'mc'},
+      {q:'-10 + 10 = ?',a:'0',hint:'Opposites cancel out',mc:['-20','0','10','20'],type:'mc'},
+      {q:'Which is larger: -3 or -8?',a:'-3',hint:'-3 is closer to zero, so larger',mc:['-8','-3','They are equal','Cannot tell'],type:'mc'},
+      {q:'-1 + (-1) + (-1) = ?',a:'-3',hint:'Three negatives add to -3',mc:['-4','-3','-2','-1'],type:'mc'},
+    ],
+    medium:[
+      {q:'-8 + (-3) = ?',a:'-11',hint:'Both negative: add, keep negative',type:'input'},
+      {q:'6 - (-4) = ?',a:'10',hint:'Subtracting a negative = adding',type:'input'},
+      {q:'-5 × 3 = ?',a:'-15',hint:'Negative × positive = negative',type:'input'},
+      {q:'-7 + 12 = ?',a:'5',hint:'Start at -7, go right 12',type:'input'},
+      {q:'(-3) × (-4) = ?',a:'12',hint:'Negative × negative = positive',type:'input'},
+      {q:'-20 ÷ 4 = ?',a:'-5',hint:'Negative ÷ positive = negative',type:'input'},
+      {q:'15 - 22 = ?',a:'-7',hint:'22 is bigger, so result is negative',type:'input'},
+      {q:'-9 + 4 - 2 = ?',a:'-7',hint:'-9+4=-5, then -5-2=-7',type:'input'},
+      {q:'(-6) × 7 = ?',a:'-42',hint:'Negative × positive = negative',type:'input'},
+      {q:'-36 ÷ (-9) = ?',a:'4',hint:'Negative ÷ negative = positive',type:'input'},
+    ],
+    hard:[
+      {q:'-4 × (-6) = ?',a:'24',hint:'Negative × negative = positive',type:'input'},
+      {q:'-36 ÷ (-9) = ?',a:'4',hint:'Negative ÷ negative = positive',type:'input'},
+      {q:'-3 + 8 × (-2) = ?',a:'-19',hint:'BODMAS: 8×(-2)=-16 first, then -3+(-16)=-19',type:'input'},
+      {q:'(-2)³ = ?',a:'-8',hint:'(-2)×(-2)×(-2) = 4×(-2) = -8',type:'input'},
+      {q:'|−5 + 3| = ?',a:'2',hint:'First: -5+3=-2, then |-2|=2',type:'input'},
+      {q:'-2(4 - (-3)) = ?',a:'-14',hint:'-2(4+3) = -2×7 = -14',type:'input'},
+      {q:'(-3)² + (-4)² = ?',a:'25',hint:'9 + 16 = 25',type:'input'},
+      {q:'Simplify: -3(4 - (-2)) + 5',a:'-13',hint:'-3(6)+5 = -18+5 = -13',type:'input'},
+    ],
+    challenge:[
+      {q:'The temperature drops 4°C each hour. It is currently 6°C. After 5 hours?',a:'-14',hint:'6 + 5×(-4) = 6-20 = -14',type:'input'},
+      {q:'(-2)⁴ - (-3)³ = ?',a:'43',hint:'16 - (-27) = 16+27 = 43',type:'input'},
+      {q:'If x = -3, what is x³ - 2x + 5?',a:'-22',hint:'(-27) - (-6) + 5 = -27+6+5 = -16... recalc: -27+6=-21, -21+5=-16',type:'input'},
+    ],
+  },
+
+  linear: {
+    easy:[
+      {q:'Find the slope of y = 3x + 2',a:'3',hint:'In y=mx+b, m is slope',mc:['2','3','5','6'],type:'mc'},
+      {q:'Y-intercept of y = 4x - 7?',a:'-7',hint:'In y=mx+b, b is y-intercept',mc:['-7','4','7','-4'],type:'mc'},
+      {q:'What is y when x=0 in y = 5x + 3?',a:'3',hint:'Substitute x=0: y=5(0)+3',mc:['0','3','5','8'],type:'mc'},
+      {q:'Slope of y = -2x + 6?',a:'-2',hint:'The coefficient of x is the slope',mc:['6','-2','2','-6'],type:'mc'},
+      {q:'Is y = 3x + 1 linear?',a:'yes',hint:'It follows y=mx+b form',mc:['yes','no','sometimes','cannot tell'],type:'mc'},
+      {q:'What is the slope of a horizontal line?',a:'0',hint:'Horizontal = flat = zero rise',mc:['-1','0','1','undefined'],type:'mc'},
+      {q:'What is the slope of a vertical line?',a:'undefined',hint:'Vertical line: infinite steepness',mc:['0','1','-1','undefined'],type:'mc'},
+      {q:'Y-intercept of y = 7x?',a:'0',hint:'y = 7x + 0, so b=0',mc:['-7','0','7','1'],type:'mc'},
+    ],
+    medium:[
+      {q:'Solve y=2x+1 when x=3',a:'7',hint:'y = 2(3)+1 = 6+1 = 7',type:'input'},
+      {q:'Find the slope between (2,5) and (6,13)',a:'2',hint:'(13-5)÷(6-2) = 8÷4 = 2',type:'input'},
+      {q:'y = -3x + 9. When does y = 0?',a:'3',hint:'0 = -3x+9, 3x=9, x=3',type:'input'},
+      {q:'Find slope between (1,2) and (4,11)',a:'3',hint:'(11-2)÷(4-1) = 9÷3 = 3',type:'input'},
+      {q:'Write the equation of a line with slope 4 and y-intercept -2.',a:'y = 4x - 2',hint:'Use y = mx + b form',type:'input'},
+      {q:'Find x when y=10 in y = 2x - 4',a:'7',hint:'10=2x-4, 14=2x, x=7',type:'input'},
+      {q:'Slope of line through (0,3) and (3,0)?',a:'-1',hint:'(0-3)÷(3-0) = -3÷3 = -1',type:'input'},
+      {q:'Find y-intercept of line through (2,7) with slope 3.',a:'1',hint:'7=3(2)+b, 7=6+b, b=1',type:'input'},
+    ],
+    hard:[
+      {q:'Solve: y=2x+1 and y=-x+7',a:'x=2, y=5',hint:'Set equal: 2x+1=-x+7, 3x=6, x=2',type:'input'},
+      {q:'Line passes through (1,3) and (4,9). Write equation.',a:'y = 2x + 1',hint:'Slope=(9-3)/(4-1)=2. Use (1,3): 3=2(1)+b, b=1',type:'input'},
+      {q:'Are y=2x+3 and y=2x-1 parallel?',a:'yes',hint:'Same slope (m=2), different intercepts',type:'input'},
+      {q:'Find intersection of y=3x-1 and y=-2x+9',a:'x=2, y=5',hint:'3x-1=-2x+9, 5x=10, x=2',type:'input'},
+      {q:'Write the equation of a line perpendicular to y=3x+2 through (0,4).',a:'y = -1/3 x + 4',hint:'Perpendicular slope = -1/3, y-intercept=4',type:'input'},
+    ],
+    challenge:[
+      {q:'Line through (-2,1) and (3,11). Where does it cross x-axis?',a:'x = -2.5',hint:'Slope=2, equation: y=2x+5. Set y=0: 0=2x+5, x=-2.5',type:'input'},
+      {q:'Solve the system: 2x+3y=12 and x-y=1',a:'x=3, y=2',hint:'From second: x=y+1. Sub: 2(y+1)+3y=12, 5y=10, y=2',type:'input'},
+    ],
+  },
+
+  quadratics: {
+    easy:[
+      {q:'Solve: x² = 9',a:'x = 3 or -3',hint:'Square root both sides',mc:['x=3','x=-3','x=3 or -3','x=81'],type:'mc'},
+      {q:'Discriminant of x²-5x+6: b²-4ac?',a:'1',hint:'(-5)²-4(1)(6)=25-24=1',mc:['1','4','7','11'],type:'mc'},
+      {q:'What is the vertex form of x² + 6x + 9?',a:'(x+3)²',hint:'Perfect square trinomial: (x+3)²',mc:['(x+3)²','(x-3)²','(x+9)²','(x+6)²'],type:'mc'},
+      {q:'Solve x² - 4 = 0',a:'x = 2 or -2',hint:'x²=4, take square root',mc:['x=2','x=-2','x=2 or -2','x=4'],type:'mc'},
+      {q:'What is the degree of a quadratic?',a:'2',hint:'Quadratic has x²',mc:['1','2','3','4'],type:'mc'},
+      {q:'For ax²+bx+c=0, sum of roots = ?',a:'-b/a',hint:'Sum of roots formula',mc:['b/a','-b/a','c/a','-c/a'],type:'mc'},
+      {q:'Solve: (x-2)(x+3) = 0',a:'x=2 or x=-3',hint:'Each factor = 0',mc:['x=2 or -3','x=-2 or 3','x=2 or 3','x=-2 or -3'],type:'mc'},
+      {q:'What is the axis of symmetry of y = x² - 4x + 3?',a:'x = 2',hint:'x = -b/(2a) = 4/2 = 2',mc:['x=1','x=2','x=3','x=4'],type:'mc'},
+    ],
+    medium:[
+      {q:'Factor x² + 5x + 6',a:'(x+2)(x+3)',hint:'Find two numbers multiplying to 6 adding to 5',type:'input'},
+      {q:'Solve x² - 7x + 12 = 0',a:'x=3 or x=4',hint:'Factor: (x-3)(x-4)=0',type:'input'},
+      {q:'Factor x² - 9',a:'(x+3)(x-3)',hint:'Difference of squares',type:'input'},
+      {q:'Solve x² + 2x - 8 = 0',a:'x=2 or x=-4',hint:'Factor: (x+4)(x-2)=0',type:'input'},
+      {q:'Factor x² - x - 12',a:'(x-4)(x+3)',hint:'Find two numbers multiplying to -12 adding to -1',type:'input'},
+      {q:'Solve x² - 6x + 9 = 0',a:'x = 3',hint:'Perfect square: (x-3)²=0',type:'input'},
+      {q:'Factor x² + 7x + 10',a:'(x+2)(x+5)',hint:'2×5=10, 2+5=7',type:'input'},
+      {q:'Solve x² - 16 = 0',a:'x=4 or x=-4',hint:'Difference of squares: (x+4)(x-4)=0',type:'input'},
+    ],
+    hard:[
+      {q:'Solve by quadratic formula: 2x² + 3x - 2 = 0',a:'x=0.5 or x=-2',hint:'x=(-3±√(9+16))/4 = (-3±5)/4',type:'input'},
+      {q:'Complete the square: x² + 8x = 20',a:'(x+4)² = 36, x=2 or -10',hint:'Add 16: (x+4)²=36',type:'input'},
+      {q:'Solve: 3x² - 5x - 2 = 0',a:'x=2 or x=-1/3',hint:'Quadratic formula: (5±√(25+24))/6 = (5±7)/6',type:'input'},
+      {q:'Find vertex of y = 2x² - 8x + 5',a:'(2, -3)',hint:'x=-b/2a=2, y=2(4)-16+5=-3',type:'input'},
+      {q:'Solve: x² + 4x + 1 = 0 (to 2dp)',a:'x=-0.27 or x=-3.73',hint:'x=(-4±√12)/2 = -2±√3',type:'input'},
+    ],
+    challenge:[
+      {q:'Ball height h=-5t²+20t. When does it hit ground?',a:'t=4 seconds',hint:'0=-5t²+20t, factor: -5t(t-4)=0',type:'input'},
+      {q:'Rectangle: length is (x+5), width is (x-2), area=40. Find x.',a:'5',hint:'(x+5)(x-2)=40, x²+3x-10=40, x²+3x-50=0... use formula',type:'input'},
+      {q:'Solve: x⁴ - 5x² + 4 = 0',a:'x=1,-1,2,-2',hint:'Let u=x²: u²-5u+4=0, (u-1)(u-4)=0',type:'input'},
+    ],
+  },
+
+  trigonometry: {
+    easy:[
+      {q:'sin(30°) = ?',a:'0.5',hint:'sin(30°) = 1/2',mc:['0.5','0.707','0.866','1'],type:'mc'},
+      {q:'cos(0°) = ?',a:'1',hint:'At 0° adjacent=hypotenuse',mc:['0','0.5','1','undefined'],type:'mc'},
+      {q:'tan(45°) = ?',a:'1',hint:'At 45°, opposite=adjacent so ratio=1',mc:['0','0.5','1','undefined'],type:'mc'},
+      {q:'sin(90°) = ?',a:'1',hint:'At 90° the opposite = hypotenuse',mc:['0','0.5','1','undefined'],type:'mc'},
+      {q:'cos(90°) = ?',a:'0',hint:'At 90° the adjacent side = 0',mc:['-1','0','0.5','1'],type:'mc'},
+      {q:'In SOH-CAH-TOA, what does SOH stand for?',a:'sin = opposite/hypotenuse',hint:'Sin, Opposite, Hypotenuse',mc:['sin=opp/hyp','sin=adj/hyp','sin=opp/adj','sin=hyp/opp'],type:'mc'},
+      {q:'sin(0°) = ?',a:'0',hint:'At 0° there is no opposite side',mc:['-1','0','0.5','1'],type:'mc'},
+      {q:'cos(60°) = ?',a:'0.5',hint:'cos(60°) = 1/2',mc:['0.5','0.707','0.866','1'],type:'mc'},
+    ],
+    medium:[
+      {q:'Hyp=10, angle=30°. Opposite side? (sin30°=0.5)',a:'5',hint:'opp = hyp × sin(30°) = 10×0.5',type:'input'},
+      {q:'Hyp=8, angle=60°. Adjacent side? (cos60°=0.5)',a:'4',hint:'adj = hyp × cos(60°) = 8×0.5',type:'input'},
+      {q:'Opposite=6, adjacent=6. What is the angle?',a:'45',hint:'tan(θ)=1, so θ=45°',type:'input'},
+      {q:'Hyp=13, opposite=5. Find the angle (sin⁻¹=22.6°≈23°)',a:'23',hint:'sin(θ)=5/13≈0.385, θ≈22.6°',type:'input'},
+      {q:'Adjacent=7, hypotenuse=10. Find cos(θ)',a:'0.7',hint:'cos=adj/hyp=7/10=0.7',type:'input'},
+      {q:'Opposite=3, hyp=5. Find sin(θ)',a:'0.6',hint:'sin=opp/hyp=3/5=0.6',type:'input'},
+      {q:'tan(θ)=1. What is θ in degrees?',a:'45',hint:'tan(45°)=1',type:'input'},
+      {q:'Find the hypotenuse if opp=6 and angle=30°. (sin30°=0.5)',a:'12',hint:'hyp = opp ÷ sin(30°) = 6 ÷ 0.5',type:'input'},
+    ],
+    hard:[
+      {q:'Ladder leans at 60°, length 8m. Height up wall? (sin60°≈0.866)',a:'6.93',hint:'height=8×sin(60°)=8×0.866',type:'input'},
+      {q:'Find all angles of a triangle with sides 3,4,5.',a:'37°, 53°, 90°',hint:'It\'s a right triangle! sin(A)=3/5, sin(B)=4/5',type:'input'},
+      {q:'sin²(θ) + cos²(θ) = ?',a:'1',hint:'Pythagorean identity — always true',type:'input'},
+      {q:'Simplify: sin(θ)/cos(θ)',a:'tan(θ)',hint:'sin/cos = tan by definition',type:'input'},
+      {q:'Tower casts 20m shadow, angle of elevation = 30°. Tower height? (tan30°≈0.577)',a:'11.54',hint:'height = 20 × tan(30°) = 20×0.577',type:'input'},
+    ],
+    challenge:[
+      {q:'Solve: 2sin(x) = 1 for 0°≤x≤360°',a:'x=30° or x=150°',hint:'sin(x)=0.5, x=30°. Also 180-30=150°',type:'input'},
+      {q:'Using cosine rule: sides 7,8,9. Find largest angle (to nearest degree)',a:'73°',hint:'cos(C)=(49+64-81)/(2×7×8)=32/112≈0.286, C≈73°',type:'input'},
+    ],
+  },
+
+  probability: {
+    easy:[
+      {q:'A coin is flipped. P(heads)?',a:'1/2',hint:'2 outcomes, 1 is heads',mc:['1/4','1/3','1/2','2/3'],type:'mc'},
+      {q:'A dice is rolled. P(rolling a 3)?',a:'1/6',hint:'6 faces, only 1 is a 3',mc:['1/3','1/4','1/5','1/6'],type:'mc'},
+      {q:'P(impossible event) = ?',a:'0',hint:'Cannot happen = probability of 0',mc:['0','0.5','1','undefined'],type:'mc'},
+      {q:'P(certain event) = ?',a:'1',hint:'Always happens = probability of 1',mc:['0','0.5','1','2'],type:'mc'},
+      {q:'A bag has 2 red and 3 blue balls. P(red)?',a:'2/5',hint:'2 red out of 5 total',mc:['1/3','2/5','3/5','2/3'],type:'mc'},
+      {q:'A dice is rolled. P(even number)?',a:'1/2',hint:'Even: 2,4,6 — 3 out of 6',mc:['1/3','1/2','2/3','3/4'],type:'mc'},
+      {q:'A dice is rolled. P(greater than 4)?',a:'1/3',hint:'5 and 6 qualify: 2 out of 6',mc:['1/6','1/3','1/2','2/3'],type:'mc'},
+      {q:'P(A) = 0.3. P(not A) = ?',a:'0.7',hint:'P(not A) = 1 - P(A) = 1 - 0.3',mc:['0.3','0.5','0.7','0.9'],type:'mc'},
+      {q:'Flip 2 coins. How many possible outcomes?',a:'4',hint:'HH, HT, TH, TT',mc:['2','3','4','8'],type:'mc'},
+      {q:'Roll a dice. P(less than 3)?',a:'2/6',hint:'1 and 2 qualify: 2 out of 6',mc:['1/6','2/6','3/6','4/6'],type:'mc'},
+    ],
+    medium:[
+      {q:'Bag has 3 red, 2 blue. P(red)?',a:'3/5',hint:'3 red out of 5 total',type:'input'},
+      {q:'Two coins flipped. P(both heads)?',a:'1/4',hint:'P(H)×P(H) = 1/2×1/2',type:'input'},
+      {q:'Roll two dice. P(sum = 7)?',a:'6/36',hint:'Pairs: (1,6),(2,5),(3,4),(4,3),(5,2),(6,1) = 6 ways',type:'input'},
+      {q:'P(A)=0.4, P(B)=0.3, independent. P(A and B)?',a:'0.12',hint:'P(A∩B) = P(A) × P(B) = 0.4×0.3',type:'input'},
+      {q:'Draw a card from 52. P(heart)?',a:'1/4',hint:'13 hearts out of 52 cards',type:'input'},
+      {q:'P(A)=0.6. P(A\')=?',a:'0.4',hint:'Complement: 1-0.6=0.4',type:'input'},
+      {q:'Bag: 5 red, 3 green, 2 blue. P(not red)?',a:'1/2',hint:'Not red = green+blue = 5 out of 10',type:'input'},
+      {q:'Roll a dice twice. P(both even)?',a:'1/4',hint:'P(even)=1/2 each time, (1/2)×(1/2)=1/4',type:'input'},
+    ],
+    hard:[
+      {q:'Card drawn from deck. P(heart or king)?',a:'4/13',hint:'P(H)=13/52, P(K)=4/52, P(H∩K)=1/52. Add-subtract overlap',type:'input'},
+      {q:'P(A)=0.5, P(B|A)=0.4. P(A and B)?',a:'0.2',hint:'P(A∩B) = P(A) × P(B|A) = 0.5×0.4',type:'input'},
+      {q:'3 cards drawn without replacement from 10(1-10). P(all even)?',a:'1/12',hint:'P = 5/10 × 4/9 × 3/8 = 60/720 = 1/12',type:'input'},
+      {q:'10 people in room. P(two share a birthday)? Approx.',a:'11.7%',hint:'P(no match)=(365/365)(364/365)...(356/365)',type:'input'},
+    ],
+    challenge:[
+      {q:'60% like math, 50% like science, 30% like both. P(math OR science)?',a:'80%',hint:'P(A∪B)=P(A)+P(B)-P(A∩B)=60+50-30=80',type:'input'},
+      {q:'Bag: 4 red, 6 blue. Draw 2 without replacement. P(one each colour)?',a:'8/15',hint:'P=(4/10×6/9)+(6/10×4/9)=24/90+24/90=48/90=8/15',type:'input'},
+      {q:'Expected value: win $10 with p=0.3, lose $5 with p=0.7. Expected value?',a:'-$0.50',hint:'E = 10×0.3 + (-5)×0.7 = 3-3.5=-0.5',type:'input'},
+    ],
+  },
+};
+
+// ============================================================
+// LESSONS (offline)
+// ============================================================
+const LESSONS = {
+  counting:      { title:{en:'Counting Numbers',es:'Contar Números'}, body:{en:'Counting helps us know how many things there are. We start at 1 and go up: 1, 2, 3, 4, 5... Each number is one more than the one before it.',es:'Contar nos ayuda a saber cuántas cosas hay. Empezamos en 1 y subimos: 1, 2, 3, 4, 5...'}, example:{en:'Count these stars: ⭐⭐⭐⭐⭐ = 5 stars',es:'Cuenta estas estrellas: ⭐⭐⭐⭐⭐ = 5 estrellas'} },
+  addition:      { title:{en:'Addition',es:'Suma'}, body:{en:'Addition means putting groups together to find the total. Use the + sign. When you add, the answer (sum) is always bigger than the numbers you started with.',es:'La suma significa juntar grupos para encontrar el total. Usa el signo +.'}, example:{en:'🍎🍎🍎 + 🍎🍎 = 5 apples total  →  3 + 2 = 5',es:'🍎🍎🍎 + 🍎🍎 = 5 manzanas total  →  3 + 2 = 5'} },
+  subtraction:   { title:{en:'Subtraction',es:'Resta'}, body:{en:'Subtraction means taking away from a group. Use the − sign. When you subtract, the answer (difference) is smaller than what you started with.',es:'La resta significa quitar de un grupo. Usa el signo −.'}, example:{en:'🍕🍕🍕🍕🍕 − 🍕🍕 = 3 slices left  →  5 − 2 = 3',es:'🍕🍕🍕🍕🍕 − 🍕🍕 = 3 rebanadas  →  5 − 2 = 3'} },
+  shapes:        { title:{en:'Shapes',es:'Formas'}, body:{en:'Shapes are everywhere! A triangle has 3 sides and 3 corners. A square has 4 equal sides. A circle has no corners — it is perfectly round.',es:'¡Las formas están en todas partes! Un triángulo tiene 3 lados. Un cuadrado tiene 4 lados iguales. Un círculo no tiene esquinas.'}, example:{en:'🔺 Triangle = 3 sides  |  🟥 Square = 4 equal sides  |  ⭕ Circle = 0 corners',es:'🔺 Triángulo = 3 lados  |  🟥 Cuadrado = 4 lados  |  ⭕ Círculo = 0 esquinas'} },
+  multiplication:{ title:{en:'Multiplication',es:'Multiplicación'}, body:{en:'Multiplication is fast addition! Instead of adding the same number many times, we use ×. 3 × 4 means "3 groups of 4" which equals 12.',es:'¡La multiplicación es suma rápida! En lugar de sumar el mismo número muchas veces, usamos ×.'}, example:{en:'🌟🌟🌟🌟  🌟🌟🌟🌟  🌟🌟🌟🌟  →  3 groups of 4 = 3 × 4 = 12',es:'🌟🌟🌟🌟  🌟🌟🌟🌟  🌟🌟🌟🌟  →  3 grupos de 4 = 3 × 4 = 12'} },
+  division:      { title:{en:'Division',es:'División'}, body:{en:'Division means splitting into equal groups. 12 ÷ 4 = 3 means "12 split into 4 equal groups gives 3 in each group."',es:'La división significa dividir en grupos iguales. 12 ÷ 4 = 3 significa "12 dividido en 4 grupos iguales da 3 en cada grupo."'}, example:{en:'🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬 ÷ 4 friends = 3 candies each  →  12 ÷ 4 = 3',es:'🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬 ÷ 4 amigos = 3 dulces cada uno  →  12 ÷ 4 = 3'} },
+  fractions:     { title:{en:'Fractions',es:'Fracciones'}, body:{en:'A fraction shows part of a whole. The bottom number (denominator) tells how many equal parts total. The top number (numerator) tells how many parts you have.',es:'Una fracción muestra parte de un todo. El número de abajo (denominador) dice cuántas partes iguales hay en total.'}, example:{en:'🍕 Cut into 4 pieces, you eat 1 → you ate 1/4 (one quarter) of the pizza',es:'🍕 Cortada en 4 piezas, comes 1 → comiste 1/4 (un cuarto) de la pizza'} },
+  decimals:      { title:{en:'Decimals',es:'Decimales'}, body:{en:'Decimals are another way to show fractions. The decimal point separates whole numbers from parts. 0.5 = 1/2, 0.25 = 1/4.',es:'Los decimales son otra forma de mostrar fracciones. El punto decimal separa los números enteros de las partes.'}, example:{en:'1.5 = 1 whole + 5 tenths = "one and a half"  →  Think of $1.50',es:'1.5 = 1 entero + 5 décimas = "uno y medio"  →  Piensa en $1.50'} },
+  geometry:      { title:{en:'Geometry: Area & Perimeter',es:'Geometría: Área y Perímetro'}, body:{en:'Perimeter is the distance around a shape (add all sides). Area is the space inside a shape (length × width for rectangles).',es:'El perímetro es la distancia alrededor de una figura (suma todos los lados). El área es el espacio dentro (largo × ancho).'}, example:{en:'Rectangle 5cm × 3cm:  Perimeter = 5+3+5+3 = 16cm  |  Area = 5×3 = 15cm²',es:'Rectángulo 5cm × 3cm:  Perímetro = 5+3+5+3 = 16cm  |  Área = 5×3 = 15cm²'} },
+  algebra:       { title:{en:'Algebra: Solving for x',es:'Álgebra: Resolver para x'}, body:{en:'In algebra, we use letters (like x) to represent unknown numbers. To solve, we do the same operation to both sides of the equation to isolate x.',es:'En álgebra, usamos letras (como x) para representar números desconocidos.'}, example:{en:'x + 5 = 12  →  Subtract 5 from both sides  →  x = 12 - 5  →  x = 7',es:'x + 5 = 12  →  Resta 5 de ambos lados  →  x = 12 - 5  →  x = 7'} },
+  ratios:        { title:{en:'Ratios',es:'Razones'}, body:{en:'A ratio compares two quantities. If there are 3 cats and 2 dogs, the ratio of cats to dogs is 3:2 (read "3 to 2").',es:'Una razón compara dos cantidades. Si hay 3 gatos y 2 perros, la razón de gatos a perros es 3:2.'}, example:{en:'3 🐱 and 2 🐶 → Ratio cats:dogs = 3:2  →  For every 3 cats there are 2 dogs',es:'3 🐱 y 2 🐶 → Razón gatos:perros = 3:2  →  Por cada 3 gatos hay 2 perros'} },
+  percentages:   { title:{en:'Percentages',es:'Porcentajes'}, body:{en:'Percent means "out of 100". 50% = 50 out of 100 = half. To find a percentage: multiply by the percentage and divide by 100.',es:'Por ciento significa "de 100". 50% = 50 de 100 = mitad.'}, example:{en:'25% of 80 = (25 × 80) ÷ 100 = 2000 ÷ 100 = 20',es:'25% de 80 = (25 × 80) ÷ 100 = 2000 ÷ 100 = 20'} },
+  statistics:    { title:{en:'Mean, Median & Mode',es:'Media, Mediana y Moda'}, body:{en:'Mean (average): add all numbers, divide by count. Median: middle value when sorted. Mode: most frequent value.',es:'Media (promedio): suma todos y divide entre la cantidad. Mediana: valor del medio. Moda: valor más frecuente.'}, example:{en:'Data: 3, 5, 7, 7, 8  →  Mean=(3+5+7+7+8)÷5=6  Median=7  Mode=7',es:'Datos: 3, 5, 7, 7, 8  →  Media=(3+5+7+7+8)÷5=6  Mediana=7  Moda=7'} },
+  integers:      { title:{en:'Integers: Positive & Negative Numbers',es:'Enteros: Números Positivos y Negativos'}, body:{en:'Integers include positive numbers, negative numbers, and zero. Negative numbers are less than zero — like being below sea level or in debt.',es:'Los enteros incluyen números positivos, negativos y cero. Los números negativos son menores que cero.'}, example:{en:'Number line: -5 -4 -3 -2 -1 0 +1 +2 +3  →  -3 + 5 = 2 (move 5 steps right from -3)',es:'Línea numérica: -5 -4 -3 -2 -1 0 +1 +2 +3  →  -3 + 5 = 2'} },
+  linear:        { title:{en:'Linear Equations: y = mx + b',es:'Ecuaciones Lineales: y = mx + b'}, body:{en:'Linear equations make straight lines on a graph. m = slope (steepness), b = y-intercept (where line crosses y-axis). Every point on the line satisfies the equation.',es:'Las ecuaciones lineales forman líneas rectas en una gráfica. m = pendiente, b = intersección y.'}, example:{en:'y = 2x + 3: when x=0, y=3; when x=1, y=5; when x=2, y=7 → a straight line!',es:'y = 2x + 3: cuando x=0, y=3; cuando x=1, y=5 → ¡una línea recta!'} },
+  quadratics:    { title:{en:'Quadratic Equations: ax² + bx + c',es:'Ecuaciones Cuadráticas: ax² + bx + c'}, body:{en:'Quadratic equations make curved U-shapes (parabolas). To solve, factor or use the quadratic formula: x = (-b ± √(b²-4ac)) / 2a.',es:'Las ecuaciones cuadráticas forman curvas en U (parábolas). Para resolver, factoriza o usa la fórmula.'}, example:{en:'x² - 5x + 6 = 0  →  Factor: (x-2)(x-3) = 0  →  x = 2 or x = 3',es:'x² - 5x + 6 = 0  →  Factoriza: (x-2)(x-3) = 0  →  x = 2 o x = 3'} },
+  trigonometry:  { title:{en:'Trigonometry: sin, cos, tan',es:'Trigonometría: seno, coseno, tangente'}, body:{en:'In a right triangle: sin = opposite/hypotenuse, cos = adjacent/hypotenuse, tan = opposite/adjacent. Remember: SOH-CAH-TOA!',es:'En un triángulo rectángulo: seno = opuesto/hipotenusa, coseno = adyacente/hipotenusa.'}, example:{en:'Triangle with hyp=10, angle=30°:  opposite = 10×sin(30°) = 10×0.5 = 5',es:'Triángulo con hip=10, ángulo=30°:  opuesto = 10×seno(30°) = 10×0.5 = 5'} },
+  probability:   { title:{en:'Probability',es:'Probabilidad'}, body:{en:'Probability measures how likely something is. It ranges from 0 (impossible) to 1 (certain). P(event) = favorable outcomes ÷ total outcomes.',es:'La probabilidad mide qué tan probable es algo. Va de 0 (imposible) a 1 (seguro).'}, example:{en:'Flip a coin: P(heads) = 1÷2 = 0.5 = 50%  →  Roll a dice: P(6) = 1÷6 ≈ 16.7%',es:'Lanzar moneda: P(cara) = 1÷2 = 0.5 = 50%  →  Dado: P(6) = 1÷6 ≈ 16.7%'} },
+};
+
+// ============================================================
+// UTILS
+// ============================================================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+}
+function showToast(msg, duration=2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+function showBadge(emoji, title, desc) {
+  document.getElementById('badge-emoji').textContent = emoji;
+  document.getElementById('badge-title').textContent = title;
+  document.getElementById('badge-desc').textContent = desc;
+  document.getElementById('badge-popup').classList.add('show');
+}
+function closeBadge() { document.getElementById('badge-popup').classList.remove('show'); }
+function saveState() {
+  try { localStorage.setItem('mb_state', JSON.stringify({ score: STATE.score, badges: STATE.badges, totalQ: STATE.totalQuestions })); } catch(e){}
+}
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem('mb_state') || '{}');
+    if (s.score) STATE.score = s.score;
+    if (s.badges) STATE.badges = s.badges;
+    if (s.totalQ) STATE.totalQuestions = s.totalQ;
+  } catch(e){}
+}
+
+// ============================================================
+// LANGUAGE & GRADE
+// ============================================================
+function setLang(lang) {
+  STATE.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  applyTranslations();
+}
+function applyTranslations() {
+  document.getElementById('landing-subtitle').textContent = t('subtitle');
+  document.getElementById('lang-label').textContent = t('chooseLang');
+  document.getElementById('grade-label').textContent = t('selectGrade');
+  document.getElementById('start-btn').textContent = t('startBtn');
+  document.getElementById('offline-banner').textContent = t('offline');
+}
+function setGrade(grade) {
+  STATE.grade = grade;
+  document.querySelectorAll('.grade-btn').forEach(b => b.classList.toggle('active', b.dataset.grade === grade));
+  document.getElementById('start-btn').disabled = false;
+}
+
+// ============================================================
+// START
+// ============================================================
+function startApp() {
+  if (!STATE.grade) return;
+  buildTopicsGrid();
+  showScreen('topics');
+}
+function buildTopicsGrid() {
+  const grid = document.getElementById('topics-grid');
+  const topics = CURRICULUM[STATE.grade];
+  document.getElementById('topics-title').textContent = t('chooseTopic');
+  grid.innerHTML = topics.map(tp => {
+    const name = tp.name[STATE.lang] || tp.name.en;
+    const desc = tp.desc[STATE.lang] || tp.desc.en;
+    return `<div class="topic-card" onclick="openTopic('${tp.id}')">
+      <span class="topic-icon">${tp.icon}</span>
+      <div class="topic-name">${name}</div>
+      <div class="topic-desc">${desc}</div>
+      <div class="topic-progress"><div class="topic-progress-fill" style="width:0%;background:${tp.color}"></div></div>
+    </div>`;
+  }).join('');
+}
+function openTopic(topicId) {
+  STATE.topic = topicId;
+  STATE.diffLevel = 0;
+  STATE.correctStreak = 0;
+  STATE.wrongStreak = 0;
+  STATE.questionIndex = 0;
+  STATE.answered = false;
+  STATE.currentQuestion = null;
+  practicePool = [];
+  practicePoolIndex = 0;
+  buildPracticePool();
+  const topics = CURRICULUM[STATE.grade];
+  const tp = topics.find(t => t.id === topicId);
+  document.getElementById('learn-icon').textContent = tp.icon;
+  document.getElementById('learn-topic-name').textContent = tp.name[STATE.lang] || tp.name.en;
+  const gradeLabels = { K3:'K–3', G46:'4–6', G79:'7–9', G1012:'10–12' };
+  document.getElementById('learn-grade-badge').textContent = gradeLabels[STATE.grade];
+  document.getElementById('tab-lesson').textContent = t('lesson');
+  document.getElementById('tab-practice').textContent = t('practice');
+  document.getElementById('tab-game').textContent = t('game');
+  switchTab('lesson');
+  loadLesson();
+  updateScoreDisplay();
+  showScreen('learn');
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(tab) {
+  STATE.tab = tab;
+  ['lesson','practice','game'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('content-'+t).style.display = t===tab ? 'block' : 'none';
+  });
+  if (tab === 'practice' && !STATE.currentQuestion) loadQuestion();
+  if (tab === 'game') setupGame();
+}
+
+// ============================================================
+// LESSONS
+// ============================================================
+function loadLesson() {
+  const lesson = LESSONS[STATE.topic];
+  if (!lesson) return;
+  const lang = STATE.lang;
+  document.getElementById('lesson-title').textContent = lesson.title[lang] || lesson.title.en;
+  document.getElementById('lesson-body').textContent = lesson.body[lang] || lesson.body.en;
+  document.getElementById('lesson-example').textContent = lesson.example[lang] || lesson.example.en;
+  document.getElementById('explain-btn').textContent = t('explainDiff');
+}
+
+async function explainDifferently() {
+  if (!STATE.isOnline) {
+    showToast('💡 Connect to internet for AI explanations!');
+    return;
+  }
+  const loading = document.getElementById('lesson-loading');
+  const btn = document.getElementById('explain-btn');
+  loading.style.display = 'flex';
+  btn.disabled = true;
+
+  const lesson = LESSONS[STATE.topic];
+  const topicName = lesson ? lesson.title.en : STATE.topic;
+  const langNames = {
+    en:'English', es:'Spanish', fr:'French', pt:'Portuguese',
+    ar:'Arabic', hi:'Hindi', zh:'Chinese', sw:'Swahili',
+    bn:'Bengali', ru:'Russian', de:'German', id:'Indonesian',
+    tl:'Filipino', vi:'Vietnamese', tr:'Turkish', uk:'Ukrainian'
+  };
+  const langName = langNames[STATE.lang] || 'English';
+  const gradeDesc = {
+    K3:'grades K-3 (ages 5-9)',
+    G46:'grades 4-6 (ages 9-12)',
+    G79:'grades 7-9 (ages 12-15)',
+    G1012:'grades 10-12 (ages 15-18)'
+  }[STATE.grade];
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        messages: [{
+          role: 'user',
+          content: `You are a friendly math teacher for ${gradeDesc}. Explain "${topicName}" using a completely different creative analogy or real-world example. Keep it simple, fun, and under 80 words. Respond entirely in ${langName}. Format your response as exactly two parts separated by the word "Example:": first a 1-2 sentence explanation, then a short concrete example after "Example:".`
+        }]
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `HTTP ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const text = data.content?.[0]?.text || '';
+    if (!text) throw new Error('Empty response');
+
+    const parts = text.split(/Example:/i);
+    document.getElementById('lesson-body').textContent = parts[0].trim();
+    document.getElementById('lesson-example').textContent =
+      parts[1] ? 'Example: ' + parts[1].trim() : text;
+
+  } catch(e) {
+    console.error('AI explain error:', e);
+    // Fallback: rotate through pre-written alternative explanations offline
+    const fallbacks = {
+      counting:       [['Counting is like climbing stairs — each step up is one more number. You never skip a step!','Example: 🪜 Step 1, step 2, step 3... each step = one number higher'],['Think of a number line as a road. Every house has an address — 1, 2, 3... you drive past each one in order.','Example: 🏠 House 1, House 2, House 3... the next house is always one more']],
+      addition:       [['Think of a piggy bank! Every time you add, you drop more coins in. The total is everything inside.','Example: 🐷 3 coins + 4 coins = 7 coins total in the bank'],['Imagine two groups of friends joining together for a party. Addition counts everyone once they\'ve all arrived.','Example: 🎉 5 friends + 3 friends = 8 friends at the party']],
+      subtraction:    [['Subtraction is like eating pizza — you start with a full pizza and take slices away. What\'s left is your answer.','Example: 🍕 8 slices − 3 eaten = 5 slices remaining'],['Think of a countdown rocket launch! 10, 9, 8... each number you subtract gets you closer to zero.','Example: 🚀 10 − 1 = 9, 9 − 1 = 8... blastoff at 0!']],
+      shapes:         [['Shapes are nature\'s building blocks — a honeycomb is hexagons, a pizza is a circle, a sandwich is a rectangle!','Example: 🍯 Beehive = hexagons, 🍕 Pizza = circle, 🥪 Sandwich = rectangle'],['Think of shapes as how many "turns" you make tracing the edge. A triangle = 3 turns, a square = 4 turns.','Example: ✏️ Draw a triangle: go, turn, go, turn, go, turn — 3 sides!']],
+      multiplication: [['Multiplication is a shortcut for repeated adding. Instead of 4+4+4+4+4, just say 5×4!','Example: 🎬 5 rows of cinema seats, 4 seats per row = 5×4 = 20 seats total'],['Think of an egg carton — rows times columns tells you how many eggs without counting each one.','Example: 🥚 2 rows × 6 columns = 12 eggs']],
+      division:       [['Division is sharing equally — like splitting birthday cake so everyone gets the same size slice.','Example: 🎂 12 slices ÷ 4 friends = 3 slices each, perfectly fair!'],['Think of division as the reverse of multiplication. If 3×4=12, then 12÷3=4 and 12÷4=3.','Example: 🔄 3 × 4 = 12, so 12 ÷ 4 = 3']],
+      fractions:      [['A fraction is like a pizza order — the bottom number says how many slices total, the top says how many you get.','Example: 🍕 3/8 means the pizza was cut into 8 slices and you get 3 of them'],['Think of fractions as steps on a staircase between 0 and 1. 1/2 is halfway up, 1/4 is a quarter of the way.','Example: 🪜 1/4 is one step if there are 4 steps between 0 and 1']],
+      decimals:       [['Decimals are like money — the dot separates dollars from cents. $3.75 means 3 whole dollars and 75 cents.','Example: 💰 3.75 = 3 whole units + 75 hundredths, just like $3 and 75 cents'],['Think of a ruler — whole numbers are the big marks, decimals are the tiny marks in between.','Example: 📏 2.5 cm is halfway between the 2 and 3 marks on a ruler']],
+      geometry:       [['Geometry is the math of the real world — architects use it to design buildings, and GPS uses it to find your location.','Example: 🏗️ A room 5m × 4m has area 20m² — that\'s how much carpet you need!'],['Think of perimeter as a fence around a garden, and area as the grass inside the fence.','Example: 🌿 Garden 6m × 3m: fence needed = 6+3+6+3 = 18m, grass area = 18m²']],
+      algebra:        [['Algebra is like a mystery box puzzle! x is the unknown weight in the box, and the equation is the clue.','Example: 📦 box + 5 = 12 → box must weigh 7, because 7 + 5 = 12'],['Think of an equation as a perfectly balanced scale. Whatever you do to one side, you must do to the other to keep it balanced.','Example: ⚖️ x + 3 = 10 → subtract 3 from both sides → x = 7']],
+      ratios:         [['Ratios are like recipes — if a smoothie needs 2 parts banana to 1 part strawberry, that ratio always stays 2:1 no matter how big the batch.','Example: 🍌 2:1 ratio means 4 bananas and 2 strawberries, or 8 bananas and 4 strawberries'],['Think of ratios as a map scale — 1:1000 means every 1cm on the map = 1000cm in real life.','Example: 🗺️ 3cm on map × 1000 = 3000cm = 30m in the real world']],
+      percentages:    [['Percent means "out of 100" — imagine a test scored out of 100. Getting 75% means you got 75 questions right.','Example: 📝 75% = 75/100 = three quarters of the questions correct'],['Think of a full battery as 100%. Half charged = 50%, nearly dead = 10%.','Example: 🔋 50% battery = half full, 25% = quarter full, 100% = fully charged']],
+      statistics:     [['Mean is like a "fair share" — if you redistributed everyone\'s pocket money equally, each person gets the mean amount.','Example: 💰 Friends have $3, $5, $7 → total $15 ÷ 3 = $5 each — that\'s the mean'],['The median is the middle child — sort all values from smallest to biggest and the one in the exact middle is the median.','Example: 👨‍👩‍👧 Heights: 140, 155, 162, 170, 185 → middle value = 162cm is the median']],
+      integers:       [['Think of a number line as a thermometer. Positive numbers are above zero (warm), negative numbers are below zero (freezing cold).','Example: 🌡️ -5°C is 5 degrees below freezing, +8°C is 8 degrees above'],['Integers are like an elevator. Floor 0 is ground level, +3 is the 3rd floor above, -2 is 2 floors underground.','Example: 🛗 Start at floor 3, go down 5 floors: 3 + (-5) = -2, you\'re in the basement!']],
+      linear:         [['A linear equation is like a steady walking speed — for every step forward in x, y goes up by the same amount (the slope).','Example: 🚶 Walking at 2km/h: after 1hr=2km, 2hrs=4km, 3hrs=6km — that\'s y=2x!'],['Think of y=mx+b as a recipe: m is how fast the output grows, b is your starting point even before you begin.','Example: 🍰 Cake costs $3 per slice (m=3) plus a $2 box fee (b=2): y = 3x + 2']],
+      quadratics:     [['A quadratic makes a U-shape called a parabola — like the arc of a basketball when you throw it up and it comes back down.','Example: 🏀 Ball goes up, reaches max height at the top of the U, then falls back — that\'s a parabola!'],['Think of factoring as finding which two numbers multiplied together make your equation — like reverse-engineering a multiplication.','Example: 🔍 x²+5x+6: what × what = 6 AND adds to 5? Answer: 2 and 3, so (x+2)(x+3)']],
+      trigonometry:   [['Trig is like a shadow calculator — if you know the angle of the sun and your height, you can calculate your shadow without measuring it.','Example: ☀️ 6ft tall person, sun at 45°: shadow = 6 × tan(45°) = 6 × 1 = 6ft long'],['Remember SOH-CAH-TOA like a chant: Sine=Opposite/Hypotenuse, Cosine=Adjacent/Hypotenuse, Tangent=Opposite/Adjacent.','Example: 🎵 SOH-CAH-TOA: for a 3-4-5 triangle at the 37° angle: sin=3/5, cos=4/5, tan=3/4']],
+      probability:    [['Probability is like weather forecasting — a 70% chance of rain doesn\'t guarantee rain, but it means rain is much more likely than sunshine.','Example: 🌦️ 70% chance of rain = out of 10 similar days, it rained on 7 of them'],['Think of probability as a dartboard — the bigger the target area, the more likely you are to hit it by throwing randomly.','Example: 🎯 Half the board is red: P(red) = 1/2. A quarter is blue: P(blue) = 1/4']],
+    };
+    const topicFallbacks = fallbacks[STATE.topic];
+    if (topicFallbacks) {
+      // Rotate between fallbacks each time button is pressed
+      STATE.explainFallbackIndex = ((STATE.explainFallbackIndex || 0) + 1) % topicFallbacks.length;
+      const fb = topicFallbacks[STATE.explainFallbackIndex];
+      document.getElementById('lesson-body').textContent = fb[0];
+      document.getElementById('lesson-example').textContent = fb[1];
+    } else {
+      showToast('Could not connect. Try again later!');
+    }
+  }
+
+  loading.style.display = 'none';
+  btn.disabled = false;
+}
+
+// ============================================================
+// PRACTICE — shuffled non-repeating question pool
+// ============================================================
+const DIFF_NAMES = ['easy','medium','hard','challenge'];
+let practicePool = [];
+let practicePoolIndex = 0;
+
+function buildPracticePool() {
+  const bank = OFFLINE_BANK[STATE.topic];
+  if (!bank) return;
+  const diffKey = DIFF_NAMES[STATE.diffLevel];
+  const pool = bank[diffKey] || bank.easy;
+  practicePool = shuffleArray([...pool]);
+  practicePoolIndex = 0;
+}
+
+function getQuestion() {
+  const bank = OFFLINE_BANK[STATE.topic];
+  if (!bank) return null;
+  const diffKey = DIFF_NAMES[STATE.diffLevel];
+  const pool = bank[diffKey] || bank.easy;
+  // Rebuild pool if difficulty changed or exhausted
+  if (practicePool.length === 0 || practicePoolIndex >= practicePool.length) {
+    practicePool = shuffleArray([...pool]);
+    practicePoolIndex = 0;
+  }
+  return practicePool[practicePoolIndex++];
+}
+
+function loadQuestion() {
+  STATE.answered = false;
+  const q = getQuestion();
+  if (!q) return;
+  STATE.currentQuestion = q;
+  document.getElementById('question-text').textContent = q.q;
+  renderAnswerArea(q);
+  updateDifficultyDisplay();
+  document.getElementById('hint-box').style.display = 'none';
+  document.getElementById('feedback-box').style.display = 'none';
+  const btnRow = document.getElementById('btn-row');
+  btnRow.innerHTML = `<button class="hint-btn" onclick="showHint()">${t('hint')}</button><button class="check-btn" id="check-btn" onclick="checkAnswer()">${t('check')}</button>`;
+}
+
+function renderAnswerArea(q) {
+  const area = document.getElementById('answer-area');
+  if (q.type === 'mc') {
+    area.innerHTML = `<div class="mc-options">${q.mc.map((opt,i)=>`<button class="mc-option" onclick="selectMC(this,'${opt.replace(/'/g,"\\'")}',${i})">${opt}</button>`).join('')}</div>`;
+  } else {
+    area.innerHTML = `<input class="answer-input" id="answer-input" type="text" placeholder="${t('typeAnswer')}" onkeydown="if(event.key==='Enter')checkAnswer()">`;
+    setTimeout(() => { const el = document.getElementById('answer-input'); if(el) el.focus(); }, 50);
+  }
+}
+
+let selectedMCAnswer = null;
+function selectMC(btn, val, idx) {
+  selectedMCAnswer = val;
+  document.querySelectorAll('.mc-option').forEach(b => b.style.opacity='0.6');
+  btn.style.opacity = '1';
+  btn.style.borderColor = 'var(--accent)';
+  btn.style.background = 'rgba(108,99,255,0.2)';
+}
+
+function updateDifficultyDisplay() {
+  const diffNames = [t('easy'), t('medium'), t('hard'), t('challenge')];
+  document.getElementById('diff-label').textContent = diffNames[STATE.diffLevel];
+  const dots = document.getElementById('diff-dots');
+  dots.innerHTML = [0,1,2,3].map(i => `<div class="diff-dot${i<=STATE.diffLevel?' filled':''}"></div>`).join('');
+  document.getElementById('q-counter').textContent = `Q ${STATE.questionIndex + 1}`;
+}
+
+function checkAnswer() {
+  if (STATE.answered) return;
+  const q = STATE.currentQuestion;
+  let userAnswer;
+  if (q.type === 'mc') {
+    userAnswer = selectedMCAnswer;
+    selectedMCAnswer = null;
+  } else {
+    const input = document.getElementById('answer-input');
+    if (!input) return;
+    userAnswer = input.value.trim();
+  }
+  if (!userAnswer) { showToast('Please enter an answer!'); return; }
+  STATE.answered = true;
+  const correct = normalizeAnswer(userAnswer) === normalizeAnswer(q.a);
+  showFeedback(correct, q);
+  const prevScore = STATE.score;
+  if (correct) {
+    STATE.correctStreak++;
+    STATE.wrongStreak = 0;
+    STATE.score += (STATE.diffLevel + 1) * 10;
+    updateScoreDisplay();
+    checkBadges();
+    if (STATE.correctStreak % 3 === 0 && STATE.diffLevel < 3) {
+      STATE.diffLevel++;
+      practicePool = []; // force rebuild pool for new difficulty
+      showToast('🔥 Level up! Getting harder!');
+    }
+    // Check score milestones: every 100 points
+    const milestones = [100, 200, 300, 500, 750, 1000];
+    const crossed = milestones.find(m => prevScore < m && STATE.score >= m);
+    if (crossed) {
+      setTimeout(() => showMilestone(crossed), 800);
+    }
+  } else {
+    STATE.wrongStreak++;
+    STATE.correctStreak = 0;
+    if (STATE.wrongStreak >= 3 && STATE.diffLevel > 0) {
+      STATE.diffLevel--;
+      practicePool = []; // force rebuild pool for new difficulty
+      showToast('💪 Stepping back to build confidence!');
+      STATE.wrongStreak = 0;
+    }
+  }
+  const btnRow = document.getElementById('btn-row');
+  btnRow.innerHTML = `<button class="next-btn" onclick="nextQuestion()">${t('next')}</button>`;
+  if (q.type === 'mc') highlightMCAnswer(q.a, correct);
+  saveState();
+}
+
+function normalizeAnswer(s) {
+  return String(s).toLowerCase().trim()
+    .replace(/\s+/g,' ')
+    .replace(/×/g,'x')
+    .replace(/÷/g,'/')
+    .replace(/\$/g,'')
+    .replace(/cm²?|m²?|kg|km/g,'')
+    .trim();
+}
+
+function highlightMCAnswer(correct, wasCorrect) {
+  document.querySelectorAll('.mc-option').forEach(btn => {
+    const v = btn.textContent.trim();
+    btn.style.opacity = '1';
+    if (normalizeAnswer(v) === normalizeAnswer(correct)) { btn.classList.add('correct'); }
+    else if (!wasCorrect) { btn.style.opacity = '0.4'; }
+  });
+}
+
+function showFeedback(correct, q) {
+  const fb = document.getElementById('feedback-box');
+  fb.className = 'feedback-box ' + (correct ? 'correct' : 'wrong');
+  fb.textContent = correct ? t('correct') : `${t('wrong')} Answer: ${q.a}`;
+  fb.style.display = 'block';
+  if (q.type !== 'mc') {
+    const input = document.getElementById('answer-input');
+    if (input) { input.classList.add(correct ? 'correct' : 'wrong'); input.disabled = true; }
+  }
+}
+
+function showHint() {
+  const q = STATE.currentQuestion;
+  if (!q) return;
+  const hintBox = document.getElementById('hint-box');
+  hintBox.textContent = '💡 ' + q.hint;
+  hintBox.style.display = 'block';
+}
+
+function nextQuestion() {
+  STATE.questionIndex++;
+  STATE.answered = false;
+  STATE.currentQuestion = null;
+  loadQuestion();
+}
+
+// ============================================================
+// MILESTONE STOP SYSTEM
+// ============================================================
+const MILESTONE_DATA = {
+  100:  { emoji:'💯', title:'100 Points!',  desc:'Great work! You\'ve earned 100 points. Take a break or keep pushing!' },
+  200:  { emoji:'🌟', title:'200 Points!',  desc:'You\'re on a roll! 200 points earned. Want to keep going?' },
+  300:  { emoji:'🔥', title:'300 Points!',  desc:'Incredible! 300 points. You\'re really learning this topic!' },
+  500:  { emoji:'🚀', title:'500 Points!',  desc:'500 points! You\'re a math superstar. Keep going or save your progress?' },
+  750:  { emoji:'👑', title:'750 Points!',  desc:'750 points! Almost at 1000. You\'re unstoppable!' },
+  1000: { emoji:'🏆', title:'1000 Points!', desc:'A THOUSAND POINTS! You are a MathBridge legend!' },
+};
+function showMilestone(score) {
+  const data = MILESTONE_DATA[score] || { emoji:'🎯', title:`${score} Points!`, desc:'Amazing milestone reached!' };
+  document.getElementById('milestone-emoji').textContent = data.emoji;
+  document.getElementById('milestone-title').textContent = data.title;
+  document.getElementById('milestone-desc').textContent = data.desc;
+  document.getElementById('milestone-popup').classList.add('show');
+}
+function closeMilestone() {
+  document.getElementById('milestone-popup').classList.remove('show');
+}
+function stopAndGoHome() {
+  document.getElementById('milestone-popup').classList.remove('show');
+  showToast('Great session! Your progress is saved. 💾');
+  setTimeout(() => showScreen('topics'), 800);
+}
+
+// Silent badge check for game (doesn't increment totalQuestions)
+function checkBadgesQuiet() {
+  BADGE_DEFS.forEach(b => {
+    if (STATE.badges.includes(b.id)) return;
+    let earned = false;
+    if (b.score && STATE.score >= b.score) earned = true;
+    if (earned) {
+      STATE.badges.push(b.id);
+      setTimeout(() => showBadge(b.emoji, b.title, b.desc), 600);
+    }
+  });
+}
+
+function updateScoreDisplay() {
+  document.getElementById('streak-count').textContent = STATE.correctStreak;
+  document.getElementById('score-count').textContent = STATE.score;
+  const maxScore = 500;
+  document.getElementById('progress-fill').style.width = Math.min(STATE.score / maxScore * 100, 100) + '%';
+}
+
+// ============================================================
+// BADGES
+// ============================================================
+const BADGE_DEFS = [
+  { id:'first', score:10, emoji:'🌟', title:'First Steps!', desc:'You answered your first question!' },
+  { id:'ten', questions:10, emoji:'🔥', title:'On Fire!', desc:'You answered 10 questions!' },
+  { id:'fifty', questions:50, emoji:'🏆', title:'Math Champion!', desc:'50 questions answered!' },
+  { id:'score100', score:100, emoji:'💯', title:'Century!', desc:'You reached 100 points!' },
+  { id:'score500', score:500, emoji:'🚀', title:'Math Rocket!', desc:'500 points! Amazing!' },
+  { id:'levelup', diffLevel:3, emoji:'👑', title:'Challenge Mode!', desc:'You reached Challenge difficulty!' },
+];
+function checkBadges() {
+  STATE.totalQuestions++;
+  BADGE_DEFS.forEach(b => {
+    if (STATE.badges.includes(b.id)) return;
+    let earned = false;
+    if (b.score && STATE.score >= b.score) earned = true;
+    if (b.questions && STATE.totalQuestions >= b.questions) earned = true;
+    if (b.diffLevel && STATE.diffLevel >= b.diffLevel) earned = true;
+    if (earned) {
+      STATE.badges.push(b.id);
+      setTimeout(() => showBadge(b.emoji, b.title, b.desc), 600);
+    }
+  });
+}
+
+// ============================================================
+// DOWNLOAD
+// ============================================================
+function downloadApp() {
+  // Try Blob download first (works in normal browsers)
+  try {
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'index.html';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+    showToast('⬇ index.html downloading!');
+    return;
+  } catch(e) {}
+
+  // Fallback: copy full HTML source to clipboard
+  try {
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    navigator.clipboard.writeText(html).then(() => {
+      showToast('📋 HTML copied! Paste into a .html file to save.');
+    }).catch(() => {
+      showToast('📥 Use the Claude file link above to download.');
+    });
+  } catch(e) {
+    showToast('📥 Use the Claude file link above to download.');
+  }
+}
+
+// ============================================================
+// SHUFFLE UTILITY
+// ============================================================
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ============================================================
+// GAME — uses actual topic questions from the offline bank
+// ============================================================
+function setupGame() {
+  STATE.gameActive = false;
+  clearInterval(STATE.gameTimer);
+  document.getElementById('game-area').innerHTML = `
+    <div class="game-title">${t('speedMath')}</div>
+    <div class="game-subtitle">${t('answerFast')}</div>
+    <button class="game-start-btn" onclick="startGame()">${t('playNow')}</button>
+  `;
+}
+
+function getGameQuestionPool() {
+  // Pull all questions from current topic's offline bank, ALL difficulty levels
+  const bank = OFFLINE_BANK[STATE.topic];
+  if (!bank) return [];
+  const diffKey = DIFF_NAMES[STATE.diffLevel];
+  // Use current diff level and one below for variety
+  const pool = [];
+  const levels = STATE.diffLevel === 0 ? ['easy'] :
+                 STATE.diffLevel === 1 ? ['easy','medium'] :
+                 STATE.diffLevel === 2 ? ['medium','hard'] : ['hard','challenge'];
+  levels.forEach(lvl => { if (bank[lvl]) pool.push(...bank[lvl]); });
+  return pool;
+}
+
+function questionToGameFormat(q) {
+  // Convert a practice question into a game multiple-choice format
+  const answer = q.a;
+  // Only use mc-type or simple numeric answers for the game
+  if (q.type === 'mc') {
+    return { question: q.q, answer: q.a, opts: shuffleArray([...q.mc]) };
+  }
+  // For input questions, try to generate wrong options if answer is numeric
+  const numAnswer = parseFloat(answer);
+  if (!isNaN(numAnswer)) {
+    const spread = Math.max(2, Math.abs(numAnswer) * 0.3);
+    const wrongs = new Set();
+    while (wrongs.size < 3) {
+      const delta = (Math.floor(Math.random() * 5) + 1) * (Math.random() < 0.5 ? 1 : -1);
+      const w = numAnswer + delta;
+      if (w !== numAnswer && w >= 0) wrongs.add(w % 1 === 0 ? w : parseFloat(w.toFixed(2)));
+    }
+    const opts = shuffleArray([numAnswer, ...wrongs]);
+    return { question: q.q, answer: String(numAnswer), opts: opts.map(String) };
+  }
+  return null; // Skip questions that can't be gamified
+}
+
+let gameQuestionPool = [];
+let gamePoolIndex = 0;
+
+function startGame() {
+  STATE.gameActive = true;
+  STATE.gameScore = 0;
+  // Build and shuffle the pool from the current topic
+  const rawPool = getGameQuestionPool();
+  gameQuestionPool = shuffleArray(rawPool)
+    .map(q => questionToGameFormat(q))
+    .filter(Boolean);
+  // Fallback to generic arithmetic if no gamifiable questions
+  if (gameQuestionPool.length === 0) gameQuestionPool = generateFallbackPool();
+  gamePoolIndex = 0;
+  STATE.gameTimeLeft = 15;
+  showGameQuestion();
+}
+
+function generateFallbackPool() {
+  const pool = [];
+  const diff = STATE.diffLevel;
+  const max = [10, 20, 50, 100][diff];
+  for (let i = 0; i < 10; i++) {
+    const ops = diff < 2 ? ['+','-'] : ['+','-','×'];
+    const op = ops[Math.floor(Math.random() * ops.length)];
+    let a, b, answer;
+    if (op === '+') { a = Math.floor(Math.random()*max)+1; b = Math.floor(Math.random()*max)+1; answer = a+b; }
+    else if (op === '-') { a = Math.floor(Math.random()*max)+1; b = Math.floor(Math.random()*(a))+1; answer = a-b; }
+    else { a = Math.floor(Math.random()*12)+1; b = Math.floor(Math.random()*12)+1; answer = a*b; }
+    const wrongs = [answer+1, answer-1, answer+2].filter(n => n >= 0 && n !== answer);
+    pool.push({ question:`${a} ${op} ${b} = ?`, answer:String(answer), opts: shuffleArray([String(answer), ...wrongs.slice(0,3).map(String)]) });
+  }
+  return pool;
+}
+
+function showGameQuestion() {
+  // Loop through shuffled pool, re-shuffle when exhausted
+  if (gamePoolIndex >= gameQuestionPool.length) {
+    gameQuestionPool = shuffleArray(gameQuestionPool);
+    gamePoolIndex = 0;
+  }
+  const gq = gameQuestionPool[gamePoolIndex++];
+  const timerCircum = 283;
+  document.getElementById('game-area').innerHTML = `
+    <div class="game-score">⚡ Score: ${STATE.gameScore}</div>
+    <div class="timer-ring">
+      <svg class="timer-svg" width="100" height="100" viewBox="0 0 100 100">
+        <circle class="timer-track" cx="50" cy="50" r="45"/>
+        <circle class="timer-fill" id="timer-circle" cx="50" cy="50" r="45" stroke-dashoffset="0"/>
+      </svg>
+      <div class="timer-text" id="timer-text">${STATE.gameTimeLeft}</div>
+    </div>
+    <div class="game-question">${gq.question}</div>
+    <div class="game-options">${gq.opts.map(o=>`<button class="game-option" onclick="gameAnswer(this,'${o.replace(/'/g,"\\'")}','${gq.answer.replace(/'/g,"\\'")}')">${o}</button>`).join('')}</div>
+  `;
+  clearInterval(STATE.gameTimer);
+  STATE.gameTimer = setInterval(() => {
+    STATE.gameTimeLeft--;
+    const el = document.getElementById('timer-text');
+    const circle = document.getElementById('timer-circle');
+    if (el) el.textContent = STATE.gameTimeLeft;
+    if (circle) circle.style.strokeDashoffset = timerCircum * (1 - STATE.gameTimeLeft/15);
+    if (STATE.gameTimeLeft <= 0) { clearInterval(STATE.gameTimer); gameOver(); }
+  }, 1000);
+}
+
+function gameAnswer(btn, selected, correct) {
+  clearInterval(STATE.gameTimer);
+  document.querySelectorAll('.game-option').forEach(b => b.disabled = true);
+  if (normalizeAnswer(selected) === normalizeAnswer(correct)) {
+    btn.classList.add('correct');
+    STATE.gameScore += 10 + STATE.gameTimeLeft;
+    STATE.score += 5;
+    updateScoreDisplay();
+    checkBadgesQuiet();
+    setTimeout(() => { STATE.gameTimeLeft = 15; showGameQuestion(); }, 700);
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.game-option').forEach(b => {
+      if (normalizeAnswer(b.textContent) === normalizeAnswer(correct)) b.classList.add('reveal');
+    });
+    setTimeout(() => gameOver(), 1200);
+  }
+}
+
+function gameOver() {
+  clearInterval(STATE.gameTimer);
+  STATE.score += STATE.gameScore;
+  updateScoreDisplay();
+  saveState();
+  document.getElementById('game-area').innerHTML = `
+    <div class="game-title">🎯 Game Over!</div>
+    <div class="game-subtitle">You scored <strong style="color:var(--accent)">${STATE.gameScore} points</strong> this round!</div>
+    <br>
+    <button class="game-start-btn" onclick="startGame()" style="margin-top:16px">${t('playNow')}</button>
+  `;
+}
+
+// ============================================================
+// ONLINE/OFFLINE
+// ============================================================
+function updateOnlineStatus() {
+  STATE.isOnline = navigator.onLine;
+  document.getElementById('offline-banner').classList.toggle('show', !STATE.isOnline);
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+// ============================================================
+// AUTO-DETECT LANGUAGE
+// ============================================================
+function autoDetectLanguage() {
+  const browserLang = navigator.language?.split('-')[0];
+  const supported = ['en','es','fr','pt','ar','hi','zh','sw','bn','ru','de','id','tl','vi','tr','uk'];
+  if (supported.includes(browserLang)) setLang(browserLang);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadState();
+autoDetectLanguage();
+updateOnlineStatus();
+applyTranslations();
+</script>
+</body>
+</html>
